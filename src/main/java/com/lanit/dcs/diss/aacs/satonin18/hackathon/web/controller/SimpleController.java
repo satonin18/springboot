@@ -1,4 +1,4 @@
-package com.lanit.dcs.diss.aacs.satonin18.hackathon.springboot.web.controller;
+package com.lanit.dcs.diss.aacs.satonin18.hackathon.web.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
