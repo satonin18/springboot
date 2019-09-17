@@ -14,7 +14,7 @@ public interface CarRepository
 //    long count(); //from CrudRepository
 
     @Query("SELECT DISTINCT lower(c.vendor) FROM Car c")
-    List<Car> allDistinctVendorIgnorCase();
+    List<String> allDistinctVendorIgnorCase();
 
 //    Long countDistinctByVendorIgnorCase
 
