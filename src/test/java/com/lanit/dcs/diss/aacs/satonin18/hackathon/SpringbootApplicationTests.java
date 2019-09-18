@@ -41,9 +41,9 @@ public class SpringbootApplicationTests {
         System.out.println();
         System.out.println("----testClear----");
         clear();
-        addPerson(dto4save_ValidPerson_1());
+        addPerson(personDto4saveList.get("ValidPerson_1"));
         clear();
-        getAndCheck(dto4save_ValidPerson_1().getId(), HttpStatus.NOT_FOUND.value(), Strings.EMPTY);
+        getAndCheck(personDto4saveList.get("ValidPerson_1").getId(), HttpStatus.NOT_FOUND.value(), Strings.EMPTY);
         System.out.println("----------------");
     }
 
@@ -51,12 +51,12 @@ public class SpringbootApplicationTests {
     public void addValidPerson() throws JsonProcessingException {
         System.out.println();
         System.out.println("----addValidPerson----");
-        addPerson(dto4save_ValidPerson_10());
+        addPerson(personDto4saveList.get("ValidPerson_10"));
 
 //        String json = new ObjectMapper().writeValueAsString(getValidPerson_10());
-        String json = dto4output_ValidPerson_10();
+        String json = personOutput4jsonList.get("ValidPerson_10");
 
-        getAndCheck(dto4save_ValidPerson_10().getId(), HttpStatus.OK.value(), json);
+        getAndCheck(personDto4saveList.get("ValidPerson_10").getId(), HttpStatus.OK.value(), json);
         System.out.println("----------------");
     }
 
@@ -64,12 +64,12 @@ public class SpringbootApplicationTests {
     public void addValidPersonLess18() throws JsonProcessingException {
         System.out.println();
         System.out.println("----addValidPerson----");
-        addPerson(dto4save_ValidPerson_10());
+        addPerson(personDto4saveList.get("ValidPerson_10"));
 
 //        String json = new ObjectMapper().writeValueAsString(getValidPerson_10());
-        String json = dto4output_ValidPerson_10();
+        String json = personOutput4jsonList.get("ValidPerson_10");
 
-        getAndCheck(dto4save_ValidPerson_10().getId(), HttpStatus.OK.value(), json);
+        getAndCheck(personDto4saveList.get("ValidPerson_10").getId(), HttpStatus.OK.value(), json);
         System.out.println("----------------");
     }
 

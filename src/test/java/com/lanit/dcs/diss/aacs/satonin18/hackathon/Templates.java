@@ -12,31 +12,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Data
-class Item<T>{
-    private T dto4save;
-    private String dto4output;
-}
-
 public class Templates {
-    public static final Map<String, Item<PersonDto4save>> personList = new HashMap<>();
-    public static final Map<String, Item<CarDto4save>> carList = new HashMap<>();
+    public static final Map<String, PersonDto4save> personDto4saveList = new HashMap<>();
+    public static final Map<String, CarDto4save> carDto4saveList = new HashMap<>();
+
+    public static final Map<String, String> personOutput4jsonList = new HashMap<>();
 
     static {
         PersonDto4save personDto4save = null;
-        Item<PersonDto4save> personItem = null;
-        Item<CarDto4save> carItem = null;
 
         personDto4save = new PersonDto4save();
         personDto4save.setId(-1L);
         personDto4save.setName("Validperson1");
         personDto4save.setBirthdate("01.01.2000");
 
-        personItem = new Item<>();
-        personItem.setDto4save(personDto4save);
-        personItem.setDto4output(Strings.EMPTY);
-
-        personList.put("ValidPerson_1", personItem);
+        personDto4saveList.put("ValidPerson_1", personDto4save);
 
 
         personDto4save = new PersonDto4save();
@@ -44,11 +34,11 @@ public class Templates {
         personDto4save.setName("Validperson1");
         personDto4save.setBirthdate("01.01.2000");
 
-        personItem = new Item<>();
-        personItem.setDto4save(personDto4save);
-        personItem.setDto4output("{\"id\":-10,\"name\":\"Validperson1\",\"birthdate\":\"01.01.2000\",\"cars\":[]}");
+        personDto4saveList.put("ValidPerson_10", personDto4save);
 
-        personList.put("ValidPerson_10", personItem);
+
+        personOutput4jsonList.put("ValidPerson_10", "{\"id\":-10,\"name\":\"Validperson1\",\"birthdate\":\"01.01.2000\",\"cars\":[]}");
+
 
 
     }
