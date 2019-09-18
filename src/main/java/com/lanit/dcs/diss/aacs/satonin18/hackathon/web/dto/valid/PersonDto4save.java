@@ -2,6 +2,7 @@ package com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.valid;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -26,6 +27,7 @@ birthdate: Date (not null,формат dd.MM.yyyy),
 
 @Data
 @NoArgsConstructor
+@ToString //ATTATION!!!
 public class PersonDto4save {
 
     @NotNull
