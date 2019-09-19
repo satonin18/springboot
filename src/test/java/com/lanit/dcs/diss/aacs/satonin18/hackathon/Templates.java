@@ -27,16 +27,19 @@ public class Templates {
     static {
         //TODO generetor ID (then INCLUDE IN JSON by stringConcantining)
         int id = 0;
-        String json = Strings.EMPTY;
+        String json4save = Strings.EMPTY;
+        String json4output = Strings.EMPTY;
 
         id = -1;
-        json = "{\"id\":\"-1\",\"name\":\"Validperson1\",\"birthdate\":\"01.01.2000\"}";
-        jsonMap.put("addperson", new Struct(id, json));
-        jsonMap.put("get", new Struct(id, Strings.EMPTY));
+        json4save = "{\"id\":\"-1\",\"name\":\"Validperson1\",\"birthdate\":\"01.01.2000\"}";
+        json4output = Strings.EMPTY;
+        jsonMap.put("addperson", new Struct(id, json4save));
+        jsonMap.put("get", new Struct(id, json4output));
 
         id = -10;
-        json = "{\"id\":-10,\"name\":\"Validperson1\",\"birthdate\":\"01.01.2000\",\"cars\":[]}\"";
-        jsonMap.put("addvalid1", new Struct(id, json));
-        jsonMap.put("get1", new Struct(id, json));
+        json4save = "{\"id\":-10,\"name\":\"Validperson1\",\"birthdate\":\"01.01.2000\",\"cars\":[]}\"";
+        json4output = "{\"id\":-10,\"name\":\"Validperson1\",\"birthdate\":\"01.01.2000\",\"cars\":[]}";
+        jsonMap.put("addvalid1", new Struct(id, json4save));
+        jsonMap.put("get1", new Struct(id, json4output));
     }
 }
