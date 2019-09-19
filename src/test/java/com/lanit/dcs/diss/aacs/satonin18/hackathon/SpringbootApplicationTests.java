@@ -261,7 +261,7 @@ public class SpringbootApplicationTests {
     @Test
     public void testAddBadPersonIncorrectBirthdate() {
         System.out.println();
-        System.out.println("----testAddBadPersonNullBirthdate----");
+        System.out.println("----testAddBadPersonIncorrectBirthdate----");
 
         test_add_notvalid7_incorrectbirthdate();
         test_getnot7();
@@ -284,4 +284,407 @@ public class SpringbootApplicationTests {
 
         System.out.println("<-");
     }
+
+    @Test
+    public void testAddBadPersonLanientBirthdate() {
+        System.out.println();
+        System.out.println("----testAddBadPersonLanientBirthdate----");
+
+        test_add_notvalid8_lanientbirthdate();
+        test_getnot8();
+
+        System.out.println("----------------");
+    }
+    private void test_add_notvalid8_lanientbirthdate() {
+        System.out.println("->test_add_notvalid8_lanientbirthdate()");
+
+        Response r = http.addPerson(jsonMap.get("add_notvalid8_lanientbirthdate").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getnot8() {
+        System.out.println("->test_getnot8()");
+
+        Response r = http.get(jsonMap.get("getnot8").getId());
+        assertEquals(HttpStatus.NOT_FOUND.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testAddBadPersonSymbolsBirthdate() {
+        System.out.println();
+        System.out.println("----testAddBadPersonSymbolsBirthdate----");
+
+        test_add_notvalid9_symbolsbirthdate();
+        test_getnot9();
+
+        System.out.println("----------------");
+    }
+    private void test_add_notvalid9_symbolsbirthdate() {
+        System.out.println("->test_add_notvalid9_symbolsbirthdate()");
+
+        Response r = http.addPerson(jsonMap.get("add_notvalid9_symbolsbirthdate").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getnot9() {
+        System.out.println("->test_getnot9()");
+
+        Response r = http.get(jsonMap.get("getnot9").getId());
+        assertEquals(HttpStatus.NOT_FOUND.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testGetBadEmptyNullPassword() {
+        System.out.println();
+        System.out.println("----testGetBadEmptyNullPassword----");
+
+        test_getnot_empty_personid();
+        test_getnot_null_personid();
+        test_getnot_personid_format();
+
+        System.out.println("----------------");
+    }
+    private void test_getnot_empty_personid() {
+        System.out.println("->test_getnot_empty_personid()");
+
+        Response r = http.getEmptyValueParam();
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getnot_null_personid() {
+        System.out.println("->test_getnot_null_personid()");
+
+        Response r = http.getWithoutParam();
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getnot_personid_format() {
+        System.out.println("->test_getnot_personid_format()");
+
+        Response r = http.getWithBadStringParam("     asdsad");
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testAddValidCar1() {
+        System.out.println();
+        System.out.println("----testAddValidCar1----");
+
+        test_add_validperson1();
+        test_add_car1();
+        test_getcar1();
+
+        System.out.println("----------------");
+    }
+    private void test_add_validperson1() {
+        System.out.println("->test_add_validperson1()");
+
+        Response r = http.addPerson(jsonMap.get("add_validperson1").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car1() {
+        System.out.println("->test_add_car1()");
+
+        Response r = http.addCar(jsonMap.get("add_car1").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getcar1() {
+        System.out.println("->test_getcar1()");
+
+        Response r = http.get(jsonMap.get("getcar1").getId());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("getcar1").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+
+
+    @Test
+    public void testAddValidCars2() {
+        System.out.println();
+        System.out.println("----testAddValidCars2----");
+
+        test_add_validperson2();
+        test_add_car2();
+        test_add_car3();
+        test_add_car4();
+        test_getcars1();
+
+        System.out.println("----------------");
+    }
+    private void test_add_validperson2() {
+        System.out.println("->test_add_validperson2()");
+
+        Response r = http.addPerson(jsonMap.get("add_validperson2").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car2() {
+        System.out.println("->test_add_car2()");
+
+        Response r = http.addCar(jsonMap.get("add_car2").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car3() {
+        System.out.println("->test_add_car3()");
+
+        Response r = http.addCar(jsonMap.get("add_car3").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car4() {
+        System.out.println("->test_add_car4()");
+
+        Response r = http.addCar(jsonMap.get("add_car4").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getcars1() {
+        System.out.println("->test_getcars1()");
+
+        Response r = http.get(jsonMap.get("getcars1").getId());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("getcars1").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+
+
+    @Test
+    public void testAddValidCars3_modelformat() {
+        System.out.println();
+        System.out.println("----testAddValidCars3_modelformat----");
+
+        test_add_validperson3();
+        test_add_car5();
+        test_add_car6();
+        test_getcars2();
+
+        System.out.println("----------------");
+    }
+    private void test_add_validperson3() {
+        System.out.println("->test_add_validperson3()");
+
+        Response r = http.addPerson(jsonMap.get("add_validperson3").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car5() {
+        System.out.println("->test_add_car5()");
+
+        Response r = http.addCar(jsonMap.get("add_car5").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car6() {
+        System.out.println("->test_add_car6()");
+
+        Response r = http.addCar(jsonMap.get("add_car6").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getcars2() {
+        System.out.println("->test_getcars2()");
+
+        Response r = http.get(jsonMap.get("getcars2").getId());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("getcars2").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testAddBadCar_modelformat() {
+        System.out.println();
+        System.out.println("----testAddBadCar_modelformat----");
+
+        test_add_validperson4();
+        test_add_not_car7();
+        test_getcar2();
+
+        System.out.println("----------------");
+    }
+    private void test_add_validperson4() {
+        System.out.println("->test_add_validperson4()");
+
+        Response r = http.addPerson(jsonMap.get("add_validperson4").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_car7() {
+        System.out.println("->test_add_not_car7()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car7").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getcar2() {
+        System.out.println("->test_getcar2()");
+
+        Response r = http.get(jsonMap.get("getcar2").getId());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("getcar2").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testAddBadCar_negative_horsepower() {
+        System.out.println();
+        System.out.println("----testAddBadCar_negative_horsepower----");
+
+        test_add_validperson5();
+        test_add_not_car8();
+        test_getcar3();
+
+        System.out.println("----------------");
+    }
+    private void test_add_validperson5() {
+        System.out.println("->test_add_validperson5()");
+
+        Response r = http.addPerson(jsonMap.get("add_validperson5").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_car8() {
+        System.out.println("->test_add_not_car8()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car8").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getcar3() {
+        System.out.println("->test_getcar3()");
+
+        Response r = http.get(jsonMap.get("getcar3").getId());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("getcar3").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testAddBadCar_less18years() {
+        System.out.println();
+        System.out.println("----testAddBadCar_less18years----");
+
+        test_add_validperson_less18years();
+        test_add_not_car9();
+        test_getcar4();
+
+        System.out.println("----------------");
+    }
+    private void test_add_validperson_less18years() {
+        System.out.println("->test_add_validperson_less18years()");
+
+        Response r = http.addPerson(jsonMap.get("add_validperson_less18years").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_car9() {
+        System.out.println("->test_add_not_car9()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car9").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getcar4() {
+        System.out.println("->test_getcar4()");
+
+        Response r = http.get(jsonMap.get("getcar4").getId());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("getcar4").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testAddBadCar_emptyNullModel() {
+        System.out.println();
+        System.out.println("----testAddBadCar_emptyNullModel----");
+
+        test_add_validperson6();
+        test_add_not_car10();
+        test_add_not_car11();
+        test_getcar5();
+
+        System.out.println("----------------");
+    }
+    private void test_add_validperson6() {
+        System.out.println("->test_add_validperson6()");
+
+        Response r = http.addPerson(jsonMap.get("add_validperson6").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_car10() {
+        System.out.println("->test_add_not_car10()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car10").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_car11() {
+        System.out.println("->test_add_not_car11()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car11").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getcar5() {
+        System.out.println("->test_getcar5()");
+
+        Response r = http.get(jsonMap.get("getcar5").getId());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("getcar5").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+
+
 }

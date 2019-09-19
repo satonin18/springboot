@@ -19,4 +19,21 @@ public class HttpService {
     public Response get(int id) {
         return RestAssured.get(API_ROOT + "/personwithcars?personid=" + id);
     }
+    public Response getEmptyValueParam() {
+        return RestAssured.get(API_ROOT + "/personwithcars?personid=");
+    }
+    public Response getWithoutParam() {
+        return RestAssured.get(API_ROOT + "/personwithcars");
+    }
+    public Response getWithBadStringParam(String badValue) {
+        return RestAssured.get(API_ROOT + "/personwithcars?personid=" + badValue);
+
+    }
+
+    public Response addCar(String json) {
+        return RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(json)
+                .post(API_ROOT + "/car");
+    }
 }
