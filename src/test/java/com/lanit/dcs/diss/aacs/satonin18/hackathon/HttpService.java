@@ -10,11 +10,20 @@ public class HttpService {
     public void clear() {
         RestAssured.get(API_ROOT + "/clear");
     }
+    public Response statistics() {
+        return RestAssured.get(API_ROOT + "/statistics");
+    }
     public Response addPerson(String json) {
         return RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(json)
                 .post(API_ROOT + "/person");
+    }
+    public Response addCar(String json) {
+        return RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(json)
+                .post(API_ROOT + "/car");
     }
     public Response get(int id) {
         return RestAssured.get(API_ROOT + "/personwithcars?personid=" + id);
@@ -30,10 +39,4 @@ public class HttpService {
 
     }
 
-    public Response addCar(String json) {
-        return RestAssured.given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(json)
-                .post(API_ROOT + "/car");
-    }
 }

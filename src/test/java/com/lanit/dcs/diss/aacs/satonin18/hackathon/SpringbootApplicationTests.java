@@ -10,11 +10,6 @@ import io.restassured.response.Response;
 import static com.lanit.dcs.diss.aacs.satonin18.hackathon.Templates.*;
 import static org.junit.Assert.assertEquals;
 
-//todo НАЗВАНИЯ ПЕРЕМЕННЫХ НЕ СООТВЕСТВУЮТ КОД_КОНВЕНШН, ТАК КАК НЕКОТОРЫЕ МЕТОДЫ(например get) асертят (проверяют валидность)
-// НО ЗАТО НАЗВАНИЯ МЕТОДОВ СООТВЕСТВУЮТ МЕТОДАМ SOAP UI
-
-// todo ПОНЯТЬ КАК РАБОТАЮТ ЭТИ АНОТАЦИИ //ПРОВЕРКА ДОЛЖНА БЫТЬ ВНУТРЕНЯЯЯ ИЛИ ВНЕШНЯЯ (КАК В SoapUI)//здесь какая???
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { SpringbootApplication.class },
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -52,9 +47,9 @@ public class SpringbootApplicationTests {
     }
 
     @Test
-    public void testAddValidPerson() {
+    public void testAddvalid_person() {
         System.out.println();
-        System.out.println("----testAddValidPerson----");
+        System.out.println("----testAddvalid_person----");
 
         test_add_valid1();
         test_get1();
@@ -82,9 +77,9 @@ public class SpringbootApplicationTests {
     }
 
     @Test
-    public void testAddValidPersonLess18() {
+    public void testAddvalid_personLess18() {
         System.out.println();
-        System.out.println("----testAddValidPersonLess18----");
+        System.out.println("----testAddvalid_personLess18----");
 
         test_add_valid2();
         test_get2();
@@ -112,9 +107,9 @@ public class SpringbootApplicationTests {
     }
 
     @Test
-    public void testAddValidPersonEmptyName() {
+    public void testAddvalid_personEmptyName() {
         System.out.println();
-        System.out.println("----testAddValidPersonEmptyName----");
+        System.out.println("----testAddvalid_personEmptyName----");
 
         test_add_valid3_emptyname();
         test_get3();
@@ -380,16 +375,16 @@ public class SpringbootApplicationTests {
         System.out.println();
         System.out.println("----testAddValidCar1----");
 
-        test_add_validperson1();
+        test_add_valid_person1();
         test_add_car1();
         test_getcar1();
 
         System.out.println("----------------");
     }
-    private void test_add_validperson1() {
-        System.out.println("->test_add_validperson1()");
+    private void test_add_valid_person1() {
+        System.out.println("->test_add_valid_person1()");
 
-        Response r = http.addPerson(jsonMap.get("add_validperson1").getJson());
+        Response r = http.addPerson(jsonMap.get("add_valid_person1").getJson());
         assertEquals(HttpStatus.OK.value(), r.getStatusCode());
 
         System.out.println("<-");
@@ -420,7 +415,7 @@ public class SpringbootApplicationTests {
         System.out.println();
         System.out.println("----testAddValidCars2----");
 
-        test_add_validperson2();
+        test_add_valid_person2();
         test_add_car2();
         test_add_car3();
         test_add_car4();
@@ -428,10 +423,10 @@ public class SpringbootApplicationTests {
 
         System.out.println("----------------");
     }
-    private void test_add_validperson2() {
-        System.out.println("->test_add_validperson2()");
+    private void test_add_valid_person2() {
+        System.out.println("->test_add_valid_person2()");
 
-        Response r = http.addPerson(jsonMap.get("add_validperson2").getJson());
+        Response r = http.addPerson(jsonMap.get("add_valid_person2").getJson());
         assertEquals(HttpStatus.OK.value(), r.getStatusCode());
 
         System.out.println("<-");
@@ -478,17 +473,17 @@ public class SpringbootApplicationTests {
         System.out.println();
         System.out.println("----testAddValidCars3_modelformat----");
 
-        test_add_validperson3();
+        test_add_valid_person3();
         test_add_car5();
         test_add_car6();
         test_getcars2();
 
         System.out.println("----------------");
     }
-    private void test_add_validperson3() {
-        System.out.println("->test_add_validperson3()");
+    private void test_add_valid_person3() {
+        System.out.println("->test_add_valid_person3()");
 
-        Response r = http.addPerson(jsonMap.get("add_validperson3").getJson());
+        Response r = http.addPerson(jsonMap.get("add_valid_person3").getJson());
         assertEquals(HttpStatus.OK.value(), r.getStatusCode());
 
         System.out.println("<-");
@@ -526,16 +521,16 @@ public class SpringbootApplicationTests {
         System.out.println();
         System.out.println("----testAddBadCar_modelformat----");
 
-        test_add_validperson4();
+        test_add_valid_person4();
         test_add_not_car7();
         test_getcar2();
 
         System.out.println("----------------");
     }
-    private void test_add_validperson4() {
-        System.out.println("->test_add_validperson4()");
+    private void test_add_valid_person4() {
+        System.out.println("->test_add_valid_person4()");
 
-        Response r = http.addPerson(jsonMap.get("add_validperson4").getJson());
+        Response r = http.addPerson(jsonMap.get("add_valid_person4").getJson());
         assertEquals(HttpStatus.OK.value(), r.getStatusCode());
 
         System.out.println("<-");
@@ -565,16 +560,16 @@ public class SpringbootApplicationTests {
         System.out.println();
         System.out.println("----testAddBadCar_negative_horsepower----");
 
-        test_add_validperson5();
+        test_add_valid_person5();
         test_add_not_car8();
         test_getcar3();
 
         System.out.println("----------------");
     }
-    private void test_add_validperson5() {
-        System.out.println("->test_add_validperson5()");
+    private void test_add_valid_person5() {
+        System.out.println("->test_add_valid_person5()");
 
-        Response r = http.addPerson(jsonMap.get("add_validperson5").getJson());
+        Response r = http.addPerson(jsonMap.get("add_valid_person5").getJson());
         assertEquals(HttpStatus.OK.value(), r.getStatusCode());
 
         System.out.println("<-");
@@ -604,16 +599,16 @@ public class SpringbootApplicationTests {
         System.out.println();
         System.out.println("----testAddBadCar_less18years----");
 
-        test_add_validperson_less18years();
+        test_add_valid_person_less18years();
         test_add_not_car9();
         test_getcar4();
 
         System.out.println("----------------");
     }
-    private void test_add_validperson_less18years() {
-        System.out.println("->test_add_validperson_less18years()");
+    private void test_add_valid_person_less18years() {
+        System.out.println("->test_add_valid_person_less18years()");
 
-        Response r = http.addPerson(jsonMap.get("add_validperson_less18years").getJson());
+        Response r = http.addPerson(jsonMap.get("add_valid_person_less18years").getJson());
         assertEquals(HttpStatus.OK.value(), r.getStatusCode());
 
         System.out.println("<-");
@@ -643,17 +638,17 @@ public class SpringbootApplicationTests {
         System.out.println();
         System.out.println("----testAddBadCar_emptyNullModel----");
 
-        test_add_validperson6();
+        test_add_valid_person6();
         test_add_not_car10();
         test_add_not_car11();
         test_getcar5();
 
         System.out.println("----------------");
     }
-    private void test_add_validperson6() {
-        System.out.println("->test_add_validperson6()");
+    private void test_add_valid_person6() {
+        System.out.println("->test_add_valid_person6()");
 
-        Response r = http.addPerson(jsonMap.get("add_validperson6").getJson());
+        Response r = http.addPerson(jsonMap.get("add_valid_person6").getJson());
         assertEquals(HttpStatus.OK.value(), r.getStatusCode());
 
         System.out.println("<-");
@@ -686,5 +681,429 @@ public class SpringbootApplicationTests {
         System.out.println("<-");
     }
 
+    @Test
+    public void testAddBadCar_emptyNullId() {
+        System.out.println();
+        System.out.println("----testAddBadCar_emptyNullModel----");
+
+        test_add_valid_person7();
+        test_add_not_car12();
+        test_add_not_car13();
+        test_getcar6();
+
+        System.out.println("----------------");
+    }
+    private void test_add_valid_person7() {
+        System.out.println("->test_add_valid_person7()");
+
+        Response r = http.addPerson(jsonMap.get("add_valid_person7").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_car12() {
+        System.out.println("->test_add_not_car12()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car12").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_car13() {
+        System.out.println("->test_add_not_car13()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car13").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getcar6() {
+        System.out.println("->test_getcar6()");
+
+        Response r = http.get(jsonMap.get("getcar6").getId());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("getcar6").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+
+
+
+    @Test
+    public void testAddBadCar_emptyNullZero_horsepower() {
+        System.out.println();
+        System.out.println("----testAddBadCar_emptyNullZero_horsepower----");
+
+        test_add_valid_person8();
+        test_add_not_car14();
+        test_add_not_car15();
+        test_add_not_car16();
+        test_getcar7();
+
+        System.out.println("----------------");
+    }
+    private void test_add_valid_person8() {
+        System.out.println("->test_add_valid_person8()");
+
+        Response r = http.addPerson(jsonMap.get("add_valid_person8").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_car14() {
+        System.out.println("->test_add_not_car14()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car14").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_car15() {
+        System.out.println("->test_add_not_car15()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car15").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_car16() {
+        System.out.println("->test_add_not_car16()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car16").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_getcar7() {
+        System.out.println("->test_getcar7()");
+
+        Response r = http.get(jsonMap.get("getcar7").getId());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("getcar7").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+
+
+    @Test
+    public void testAddBadCar_emptyNull_ownerId() {
+        System.out.println();
+        System.out.println("----testAddBadCar_emptyNull_ownerId----");
+
+        test_add_not_car17();
+        test_add_not_car18();
+
+        System.out.println("----------------");
+    }
+    private void test_add_not_car17() {
+        System.out.println("->test_add_not_car17()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car17").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_car18() {
+        System.out.println("->test_add_not_car18()");
+
+        Response r = http.addCar(jsonMap.get("add_not_car18").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testAddBadPerson_unique() {
+        System.out.println();
+        System.out.println("----testAddBadPerson_unique----");
+
+        test_add_valid_person9();
+        test_add_not_valid_uniqueperson();
+
+        System.out.println("----------------");
+    }
+    private void test_add_valid_person9() {
+        System.out.println("->test_add_valid_person9()");
+
+        Response r = http.addPerson(jsonMap.get("add_valid_person9").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_valid_uniqueperson() {
+        System.out.println("->test_add_not_valid_uniqueperson()");
+
+        Response r = http.addPerson(jsonMap.get("add_not_valid_uniqueperson").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testAddBadCar_unique() {
+        System.out.println();
+        System.out.println("----testAddBadCar_unique----");
+
+        test_add_valid_person10();
+        test_add_car7();
+        test_add_not_valid_unique_car();
+
+        System.out.println("----------------");
+    }
+    private void test_add_valid_person10() {
+        System.out.println("->test_add_valid_person10()");
+
+        Response r = http.addPerson(jsonMap.get("add_valid_person10").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car7() {
+        System.out.println("->test_add_car7()");
+
+        Response r = http.addCar(jsonMap.get("add_car7").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_valid_unique_car() {
+        System.out.println("->test_add_not_valid_unique_car()");
+
+        Response r = http.addCar(jsonMap.get("add_not_valid_unique_car").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testStatistics() {
+        System.out.println();
+        System.out.println("----testAddValidCars2----");
+
+        http.clear();
+        test_empty_statistics();
+
+        test_add_valid_person11();
+        test_add_car8();
+        test_add_car9();
+        test_add_car10();
+        test_add_car11();
+        test_add_car12();
+        test_statistics();
+
+        System.out.println("----------------");
+    }
+    private void test_empty_statistics() {
+        System.out.println("->test_empty_statistics()");
+
+        Response r = http.statistics();
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("empty_statistics").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+    private void test_add_valid_person11() {
+        System.out.println("->test_add_valid_person11()");
+
+        Response r = http.addPerson(jsonMap.get("add_valid_person11").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car8() {
+        System.out.println("->test_add_car8()");
+
+        Response r = http.addCar(jsonMap.get("add_car8").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car9() {
+        System.out.println("->test_add_car9()");
+
+        Response r = http.addCar(jsonMap.get("add_car9").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car10() {
+        System.out.println("->test_add_car10()");
+
+        Response r = http.addCar(jsonMap.get("add_car10").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car11() {
+        System.out.println("->test_add_car11()");
+
+        Response r = http.addCar(jsonMap.get("add_car11").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_car12() {
+        System.out.println("->test_add_car12()");
+
+        Response r = http.addCar(jsonMap.get("add_car12").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_statistics() {
+        System.out.println("->test_statistics()");
+
+        Response r = http.statistics();
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("statistics").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testStatistics2notAdd() {
+        System.out.println();
+        System.out.println("----testStatistics2notAdd----");
+
+        http.clear();
+        test_empty_statistics();
+
+        test_add_valid_person12();
+        test_add_not_valid_person13_nullname();
+        test_add_valid_car();
+        test_add_not_valid_car_empty_model();
+        test_statistics2();
+
+        System.out.println("----------------");
+    }
+    private void test_add_valid_person12() {
+        System.out.println("->test_add_valid_person12()");
+
+        Response r = http.addPerson(jsonMap.get("add_valid_person12").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_valid_person13_nullname() {
+        System.out.println("->test_add_not_valid_person13_nullname()");
+
+        Response r = http.addPerson(jsonMap.get("add_not_valid_person13_nullname").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_valid_car() {
+        System.out.println("->test_add_valid_car()");
+
+        Response r = http.addCar(jsonMap.get("add_valid_car").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_not_valid_car_empty_model() {
+        System.out.println("->test_add_not_valid_car_empty_model()");
+
+        Response r = http.addCar(jsonMap.get("add_not_valid_car_empty_model").getJson());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_statistics2() {
+        System.out.println("->test_statistics2()");
+
+        Response r = http.statistics();
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("statistics2").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
+
+    @Test
+    public void testStatistics3ignorCase() {
+        System.out.println();
+        System.out.println("----testStatistics3ignorCase----");
+
+        http.clear();
+        test_empty_statistics();
+
+        test_add_valid_person13();
+        test_add_valid_car1();
+        test_add_valid_car2();
+        test_add_valid_car3();
+        test_add_valid_car4();
+        test_add_valid_car5();
+        test_statistics3();
+
+        System.out.println("----------------");
+    }
+    private void test_add_valid_person13() {
+        System.out.println("->test_add_valid_person13()");
+
+        Response r = http.addPerson(jsonMap.get("add_valid_person13").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_valid_car1() {
+        System.out.println("->test_add_valid_car1()");
+
+        Response r = http.addCar(jsonMap.get("add_valid_car1").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_valid_car2() {
+        System.out.println("->test_add_valid_car2()");
+
+        Response r = http.addCar(jsonMap.get("add_valid_car2").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_valid_car3() {
+        System.out.println("->test_add_valid_car3()");
+
+        Response r = http.addCar(jsonMap.get("add_valid_car3").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_valid_car4() {
+        System.out.println("->test_add_valid_car4()");
+
+        Response r = http.addCar(jsonMap.get("add_valid_car4").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_add_valid_car5() {
+        System.out.println("->test_add_valid_car5()");
+
+        Response r = http.addCar(jsonMap.get("add_valid_car5").getJson());
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+
+        System.out.println("<-");
+    }
+    private void test_statistics3() {
+        System.out.println("->test_statistics3()");
+
+        Response r = http.statistics();
+        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
+        //todo check vars -> jsonParsing->everyVar==requestVar
+        //simple approach
+        assertEquals(jsonMap.get("statistics3").getJson(), r.getBody().print());
+
+        System.out.println("<-");
+    }
 
 }

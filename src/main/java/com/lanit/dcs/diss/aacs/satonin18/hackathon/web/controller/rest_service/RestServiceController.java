@@ -23,9 +23,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-//TODO ПОМЕНЯТЬ ЭТОТ ГОВНОКОД НА НОРМАЛБНЫЙ
-
-//@SuppressWarnings("ALL")
 @RestController //todo check binding with other anotations (=analog /*@ResponseBody*/, but not @RequestBody)
 @Controller("restServiceController")
 public class RestServiceController {
@@ -41,13 +38,12 @@ public class RestServiceController {
 			BindingResult bindingResult
 	) {
 		try {
-			//------------------------------------
+			// VALIDATE ------------------------------------
 			if (bindingResult.hasErrors()) throw new Exception();
 			if ( personService.existsById(dto.getId()) ) throw new Exception();
-			//todo replace
+
 			DateTimeFormatter formatters = DateTimeFormatter.ofPattern(PropertiesApp.DATA_FORMAT_BIRTHDATE);
 			LocalDate birthday = LocalDate.parse(dto.getBirthdate(), formatters);
-
 			long days = birthday.until(LocalDate.now(), ChronoUnit.DAYS);
 			if(days < 0) throw new Exception();
 			//------------------------------------
@@ -70,10 +66,11 @@ public class RestServiceController {
 			BindingResult bindingResult
 	) {
 		try {
-			//------------------------------------
+			// VALIDATE ------------------------------------
 			if (bindingResult.hasErrors()) throw new Exception();
 			if ( carService.existsById(dto.getId()) ) throw new Exception();
 			if(dto.getHorsepower() <= 0) throw new Exception();
+			
 			Person ownerPerson = personService.findById(dto.getOwnerId()).orElseThrow( () -> new Exception() );
 			LocalDate birthday = ownerPerson.getBirthdate();//.toLocalDate();
 			long age = birthday.until(LocalDate.now(), ChronoUnit.YEARS);
