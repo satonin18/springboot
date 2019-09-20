@@ -17,7 +17,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor //ATTATION //no EDIT !!!
 class Struct{
-    private int id;
+    private Integer id;
     private String json;
 }
 
@@ -27,8 +27,8 @@ public class Templates {
 
     static {
         //TODO INCLUDE ID IN JSON by stringConcantining)
-        int id = 0;
-        int idcar = 0;
+        Integer id = null;
+        Integer idcar = null;
         String json4save = Strings.EMPTY;
         String json4output = Strings.EMPTY;
 
@@ -62,11 +62,11 @@ public class Templates {
         jsonMap.put("add_valid4_futurebirthdate", new Struct(id, json4save));
         jsonMap.put("getnot4", new Struct(id, json4output));
 
-        id = 0; //todo no corect
+        id = null;
         json4save = "{\"id\":\"\",\"name\":\"valid\",\"birthdate\":\"01.12.2017\"}";
         jsonMap.put("add_notvalid_emptyid", new Struct(id, json4save));
 
-        id = 0; //todo no corect
+        id = null;
         json4save = "{\"name\":\"valid\",\"birthdate\":\"01.12.2017\"}";
         jsonMap.put("add_notvalid_nullid", new Struct(id, json4save));
 
@@ -222,10 +222,10 @@ public class Templates {
         json4save = "{\"id\":\"-200\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
         jsonMap.put("add_valid_person7", new Struct(id, json4save));
 
-        idcar = 0;
+        idcar = null;
         json4save = "{\"id\":\"\",\"model\":\"BMW-X3\",\"horsepower\":100,\"ownerId\":\"-200\"}";
         jsonMap.put("add_not_car12", new Struct(idcar, json4save));
-        idcar = 0;
+        idcar = null;
         json4save = "{\"model\":\"BMW-X3\",\"horsepower\":100,\"ownerId\":\"-200\"}";
         jsonMap.put("add_not_car13", new Struct(idcar, json4save));
 
@@ -294,7 +294,7 @@ public class Templates {
 
 
 
-        id = 0;
+        id = null;
         json4save = "{\"personcount\":0,\"carcount\":0,\"uniquevendorcount\":0}";
         jsonMap.put("empty_statistics", new Struct(id, json4save));
 
@@ -318,7 +318,7 @@ public class Templates {
         json4save = "{\"id\":\"-226\",\"model\":\"La-da-\",\"horsepower\":50,\"ownerId\":\"-230\"}";
         jsonMap.put("add_car12", new Struct(idcar, json4save));
 
-        id = 0;
+        id = null;
         json4save = "{\"personcount\":1,\"carcount\":5,\"uniquevendorcount\":3}";
         jsonMap.put("statistics", new Struct(id, json4save));
 
@@ -341,7 +341,7 @@ public class Templates {
         json4save = "{\"id\":\"-239\",\"model\":\"\",\"horsepower\":50,\"ownerId\":\"-240\"}";
         jsonMap.put("add_not_valid_car_empty_model", new Struct(idcar, json4save));
 
-        id = 0;
+        id = null;
         json4save = "{\"personcount\":1,\"carcount\":1,\"uniquevendorcount\":1}";
         jsonMap.put("statistics2", new Struct(id, json4save));
 
@@ -367,7 +367,7 @@ public class Templates {
         json4save = "{\"id\":\"-266\",\"model\":\"La-da-\",\"horsepower\":50,\"ownerId\":\"-270\"}";
         jsonMap.put("add_valid_car5", new Struct(idcar, json4save));
 
-        id = 0;
+        id = null;
         json4save = "{\"personcount\":1,\"carcount\":5,\"uniquevendorcount\":3}";
         jsonMap.put("statistics3", new Struct(id, json4save));
 

@@ -70,7 +70,7 @@ public class RestServiceController {
 			if (bindingResult.hasErrors()) throw new Exception();
 			if ( carService.existsById(dto.getId()) ) throw new Exception();
 			if(dto.getHorsepower() <= 0) throw new Exception();
-			
+
 			Person ownerPerson = personService.findById(dto.getOwnerId()).orElseThrow( () -> new Exception() );
 			LocalDate birthday = ownerPerson.getBirthdate();//.toLocalDate();
 			long age = birthday.until(LocalDate.now(), ChronoUnit.YEARS);
