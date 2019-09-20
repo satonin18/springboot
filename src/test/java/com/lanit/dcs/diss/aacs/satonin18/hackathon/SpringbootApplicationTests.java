@@ -11,6 +11,7 @@ import static com.lanit.dcs.diss.aacs.satonin18.hackathon.Templates.*;
 import static org.junit.Assert.assertEquals;
 
 //TODO ИЗ ЗА ТОГО ЧТО МЕТОДЫ ЗАПУСКАЮТСЯ В ХАОТИЧНОМ ПОРЯДКЕ ТО НУЖНО ПЕРЕД КАЖДЫМ ПОСТВАИТЬ ОЧИСТКУ
+//TODO JSON-parsing and check every var
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { SpringbootApplication.class },

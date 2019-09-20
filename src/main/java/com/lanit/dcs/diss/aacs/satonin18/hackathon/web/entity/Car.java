@@ -2,6 +2,7 @@ package com.lanit.dcs.diss.aacs.satonin18.hackathon.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+//import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.valid.NotExistCarWithTheId;
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.valid.Have18Age;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ import javax.persistence.*;
 //@JsonIgnoreProperties({"person", "vendor", "model"})
 public class Car {
 
-
+//    @NotExistCarWithTheId //todo долго вникать!!! https://habr.com/ru/post/424819/
 
     @Id
     @Column(name = "id", nullable = false)
