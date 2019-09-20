@@ -7,15 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository//("carRepository")
+@Repository
 public interface CarRepository
         extends JpaRepository<Car, Long>
 {
-//    long count(); //from CrudRepository
-
     @Query("SELECT DISTINCT lower(c.vendor) FROM Car c")
     List<String> allDistinctVendorIgnorCase();
-
-//    Long countDistinctByVendorIgnorCase
-
 }

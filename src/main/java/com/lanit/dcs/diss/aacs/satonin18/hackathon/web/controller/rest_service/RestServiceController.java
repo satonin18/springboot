@@ -46,7 +46,6 @@ public class RestServiceController {
 			Person person = new Person();
 			person.setId(dto.getId());
 			person.setName(dto.getName());
-//			person.setBirthdate(birthday);
 			person.setBirthdate(dto.getBirthdate());
 
 			personService.save(person);
@@ -69,7 +68,7 @@ public class RestServiceController {
 			if(dto.getHorsepower() <= 0) throw new Exception();
 
 			Person ownerPerson = personService.findById(dto.getOwnerId()).orElseThrow( () -> new Exception() );
-			LocalDate birthday = ownerPerson.getBirthdate();//.toLocalDate();
+			LocalDate birthday = ownerPerson.getBirthdate();
 			long age = birthday.until(LocalDate.now(), ChronoUnit.YEARS);
 			if(age < 18) throw new Exception();
 
