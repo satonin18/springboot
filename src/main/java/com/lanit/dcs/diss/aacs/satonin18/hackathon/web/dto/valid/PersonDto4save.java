@@ -1,11 +1,18 @@
 package com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.valid;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.helper.PropertiesApp;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 
 //todo validation
 /*
@@ -43,8 +50,14 @@ public class PersonDto4save {
 //    @DateTimeFormat(PropertiesApp.DATA_FORMAT_BIRTHDATE)
 //    java.sql.Date birthdate;
 
-    @NotNull
 //    @NotBlank
 //    @Pattern(regexp = )
-    String birthdate;//todo + PropertiesApp.DATA_FORMAT_BIRTHDATE
+//    String birthdate;//todo + PropertiesApp.DATA_FORMAT_BIRTHDATE
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PropertiesApp.DATA_FORMAT_BIRTHDATE)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+
+    @NotNull
+    @Past
+
+    LocalDate birthdate; //java.sql.Date
 }

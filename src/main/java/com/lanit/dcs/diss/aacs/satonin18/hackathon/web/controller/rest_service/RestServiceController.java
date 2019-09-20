@@ -42,16 +42,12 @@ public class RestServiceController {
 			// VALIDATE ------------------------------------
 			if (bindingResult.hasErrors()) throw new Exception();
 			if ( personService.existsById(dto.getId()) ) throw new Exception();
-
-			DateTimeFormatter formatters = DateTimeFormatter.ofPattern(PropertiesApp.DATA_FORMAT_BIRTHDATE);
-			LocalDate birthday = LocalDate.parse(dto.getBirthdate(), formatters);
-			long days = birthday.until(LocalDate.now(), ChronoUnit.DAYS);
-			if(days < 0) throw new Exception();
 			//------------------------------------
 			Person person = new Person();
 			person.setId(dto.getId());
 			person.setName(dto.getName());
-			person.setBirthdate(birthday);
+//			person.setBirthdate(birthday);
+			person.setBirthdate(dto.getBirthdate());
 
 			personService.save(person);
 

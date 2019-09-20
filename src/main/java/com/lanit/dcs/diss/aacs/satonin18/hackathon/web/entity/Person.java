@@ -55,7 +55,7 @@ public class Person {
 
 
 
-    @JsonFormat(pattern = PropertiesApp.DATA_FORMAT_BIRTHDATE, shape = JsonFormat.Shape.STRING)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PropertiesApp.DATA_FORMAT_BIRTHDATE)
     @JsonDeserialize(using = LocalDateDeserializer.class)
 
 //    @Past
