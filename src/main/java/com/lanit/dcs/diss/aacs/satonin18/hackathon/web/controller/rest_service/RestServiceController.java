@@ -1,11 +1,10 @@
 package com.lanit.dcs.diss.aacs.satonin18.hackathon.web.controller.rest_service;
 
-import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.StatisticsDto;
-import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.valid.CarDto4save;
-import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.valid.PersonDto4save;
+import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.output.StatisticsDto;
+import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.input.valid.CarDto4save;
+import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.input.valid.PersonDto4save;
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.entity.Car;
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.entity.Person;
-import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.helper.PropertiesApp;
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.service.CarService;
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 @RestController //todo check binding with other anotations (=analog /*@ResponseBody*/, but not @RequestBody)
@@ -79,8 +77,8 @@ public class RestServiceController {
 			car.setVendor(fullName[0]);
 			car.setModel(fullName[1]);
 
-//			car.setPerson(ownerPerson);
-			car.setOwnerId(ownerPerson.getId());
+			car.setPerson(ownerPerson);
+//			car.setOwnerId(ownerPerson.getId());
 
 			carService.save(car);//can be add:@Transactional(rollbackFor = Exception.class)
 

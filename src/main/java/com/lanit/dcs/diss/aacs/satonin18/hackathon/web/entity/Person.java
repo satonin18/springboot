@@ -44,8 +44,8 @@ public class Person {
 
     @org.hibernate.annotations.LazyCollection(
             org.hibernate.annotations.LazyCollectionOption.FALSE)
-//    @OneToMany(mappedBy = "person")
-    @OneToMany(mappedBy = "ownerId")
+    @OneToMany(mappedBy = "person")
+//    @OneToMany(mappedBy = "ownerId")
     List<Car> cars;
 
 }

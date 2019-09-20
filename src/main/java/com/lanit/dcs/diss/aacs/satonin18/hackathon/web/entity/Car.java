@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
@@ -57,15 +54,18 @@ public class Car {
 
 
 
-    @Column(name = "ownerId", nullable = false)
-    Long ownerId;
+    @JsonIgnore
+
+    @ManyToOne
+    @JoinColumn(name = "ownerId", referencedColumnName = "id", nullable = false)
+    private Person person;
 
 
 
-//    @JsonIgnore
-//
-//    @ManyToOne
-//    @JoinColumn(name = "ownerId", referencedColumnName = "id", nullable = false)
-//    private Person person;
-
+//    @Column(name = "ownerId", nullable = false)
+//    Long ownerId;
+    @JsonProperty("ownerId")
+    Long ownerId(){
+        return person.getId();
+    }
 }

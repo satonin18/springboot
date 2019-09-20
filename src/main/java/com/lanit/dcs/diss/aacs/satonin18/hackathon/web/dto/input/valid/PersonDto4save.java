@@ -1,4 +1,4 @@
-package com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.valid;
+package com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.input.valid;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
@@ -20,7 +19,7 @@ import java.time.LocalDate;
 public class PersonDto4save {
 
 
-
+    //такой id не дожен лежать в бд
     @NotNull
     Long id;
 
@@ -35,7 +34,7 @@ public class PersonDto4save {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PropertiesApp.DATA_FORMAT_BIRTHDATE)
     @JsonDeserialize(using = LocalDateDeserializer.class)
 
-    @NotNull
+    @NotNull //can be remove
     @Past
 
     LocalDate birthdate;
