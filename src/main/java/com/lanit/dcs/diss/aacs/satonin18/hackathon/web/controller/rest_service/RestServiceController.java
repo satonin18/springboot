@@ -27,10 +27,14 @@ import java.time.temporal.ChronoUnit;
 @Controller("restServiceController")
 public class RestServiceController {
 
-	@Autowired
 	private PersonService personService;
-	@Autowired
 	private CarService carService;
+
+	@Autowired
+	public RestServiceController(PersonService personService, CarService carService) {
+		this.personService = personService;
+		this.carService = carService;
+	}
 
 	@RequestMapping(value = "/person", method = RequestMethod.POST)
 	public ResponseEntity save_person(
@@ -152,4 +156,18 @@ public class RestServiceController {
 		}
 	}
 
+
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	public Car test() {
+		Car car = new Car();
+		car.setId(0L);
+		car.setOwnerId(0L);
+		car.setModel("-------7");
+		car.setVendor("7-------");
+		car.setHorsepower(0);
+
+		if(true) throw new RuntimeException("123456789qwerty");
+
+		return car;
+	}
 }
