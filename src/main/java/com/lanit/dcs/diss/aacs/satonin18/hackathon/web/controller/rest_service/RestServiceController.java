@@ -13,10 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -166,8 +163,8 @@ public class RestServiceController {
 		car.setVendor("7-------");
 		car.setHorsepower(0);
 
-		if(true) throw new RuntimeException("123456789qwerty");
+		if(true) throw new MyExc("123456789qwerty");
 
-		return car;
+		return  car; //=HttpStatus.OK//200
 	}
 }
