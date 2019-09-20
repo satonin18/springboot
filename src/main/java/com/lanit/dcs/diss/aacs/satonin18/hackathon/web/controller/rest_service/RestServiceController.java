@@ -71,16 +71,14 @@ public class RestServiceController {
 			LocalDate birthday = ownerPerson.getBirthdate();
 			long age = birthday.until(LocalDate.now(), ChronoUnit.YEARS);
 			if(age < 18) throw new Exception();
-
-			String[] mas = dto.getModel().split("-",2);
-			if(mas[0].length() > 50 || mas[1].length() > 50) throw new Exception();
 			//------------------------------------
+			String[] fullName = dto.getModel().split("-",2);
 
 			Car car = new Car();
 			car.setId(dto.getId());
 			car.setHorsepower(dto.getHorsepower());
-			car.setVendor(mas[0]);
-			car.setModel(mas[1]);
+			car.setVendor(fullName[0]);
+			car.setModel(fullName[1]);
 
 //			car.setPerson(ownerPerson);
 			car.setOwnerId(ownerPerson.getId());

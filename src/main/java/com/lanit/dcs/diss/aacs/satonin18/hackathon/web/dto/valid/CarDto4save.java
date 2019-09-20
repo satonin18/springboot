@@ -15,7 +15,7 @@ public class CarDto4save {
     Long id;
 
     @NotNull
-    @Pattern(regexp = "^[^-]+-.+$") //"^"=start  "$"=end  "[^-]"=любой_символ_кромеТИРЕ  "."=любой_символ  "+"=OneOrMore
+    @Pattern(regexp = "^[^-]{1,50}-.{1,50}$") //"^"=start  "$"=end  "[^-]"=любой_символ_кромеТИРЕ  "."=любой_символ  "+"=OneOrMore "{1,50}"-min=1,max=50
     String model; //полное имя совпадает с хранимой внутри перменой
 
     @NotNull
