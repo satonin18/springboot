@@ -2,6 +2,7 @@ package com.lanit.dcs.diss.aacs.satonin18.hackathon.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.valid.Have18Age;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -46,7 +47,6 @@ public class Car {
 
 
 
-//    @Positive
 //    @Range(min=1)
 
     @Column(name = "horsepower", nullable = false)
@@ -55,6 +55,8 @@ public class Car {
 
 
     @JsonIgnore
+
+    @Have18Age
 
     @ManyToOne
     @JoinColumn(name = "ownerId", referencedColumnName = "id", nullable = false)

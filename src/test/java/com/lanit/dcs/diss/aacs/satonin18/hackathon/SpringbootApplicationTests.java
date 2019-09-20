@@ -10,12 +10,15 @@ import io.restassured.response.Response;
 import static com.lanit.dcs.diss.aacs.satonin18.hackathon.Templates.*;
 import static org.junit.Assert.assertEquals;
 
+//TODO ИЗ ЗА ТОГО ЧТО МЕТОДЫ ЗАПУСКАЮТСЯ В ХАОТИЧНОМ ПОРЯДКЕ ТО НУЖНО ПЕРЕД КАЖДЫМ ПОСТВАИТЬ ОЧИСТКУ
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { SpringbootApplication.class },
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class SpringbootApplicationTests {
     //can be replace
     private HttpService http = new HttpService();
+
 
     @Test
     public void testClear() {

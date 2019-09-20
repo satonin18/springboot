@@ -14,21 +14,27 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+import javax.validation.Validator;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController //todo check binding with other anotations (=analog /*@ResponseBody*/, but not @RequestBody)
 @Controller("restServiceController")
 public class RestServiceController {
 
-	private PersonService personService;
-	private CarService carService;
+	private final PersonService personService;
+	private final CarService carService;
+	private final Validator validator;
 
 	@Autowired
-	public RestServiceController(PersonService personService, CarService carService) {
+	public RestServiceController(final PersonService personService, final CarService carService, final Validator validator) {
 		this.personService = personService;
 		this.carService = carService;
+		this.validator = validator;
 	}
 
 	@RequestMapping(value = "/person", method = RequestMethod.POST)
@@ -63,11 +69,7 @@ public class RestServiceController {
 			// VALIDATE ------------------------------------
 			if (bindingResult.hasErrors()) throw new Exception();
 			if ( carService.existsById(dto.getId()) ) throw new Exception();
-
 			Person ownerPerson = personService.findById(dto.getOwnerId()).orElseThrow( () -> new Exception() );
-			LocalDate birthday = ownerPerson.getBirthdate();
-			long age = birthday.until(LocalDate.now(), ChronoUnit.YEARS);
-			if(age < 18) throw new Exception();
 			//------------------------------------
 			String[] fullName = dto.getModel().split("-",2);
 
@@ -80,6 +82,12 @@ public class RestServiceController {
 			car.setPerson(ownerPerson);
 //			car.setOwnerId(ownerPerson.getId());
 
+			Set<ConstraintViolation<Car>> validates = validator.validate(car);
+			if(validates.size() > 0) {
+				String errors = validates.stream().map(v -> v.getMessage())
+						.collect(Collectors.joining());//todo check for 2 and more
+				throw new Exception(errors);
+			}
 			carService.save(car);//can be add:@Transactional(rollbackFor = Exception.class)
 
 			return new ResponseEntity<>(HttpStatus.OK);
