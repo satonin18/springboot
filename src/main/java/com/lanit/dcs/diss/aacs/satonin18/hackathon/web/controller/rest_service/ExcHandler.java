@@ -7,28 +7,40 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-public class ExcHandler {
-//    @ControllerAdvice
-//    public class AwesomeExceptionHandler extends ResponseEntityExceptionHandler {
-//
-//        @ExceptionHandler(ThereIsNoSuchUserException.class)
-//        protected ResponseEntity<AwesomeException> handleThereIsNoSuchUserException() {
-//            return new ResponseEntity<>(new AwesomeException("There is no such user"), HttpStatus.NOT_FOUND);
-//        }
-//
-//        @Data
-//        @AllArgsConstructor
-//        private static class AwesomeException {
-//            private String message;
-//        }
-//
-//
-//    }
-}
+@ControllerAdvice
+public class ExcHandler extends ResponseEntityExceptionHandler {
 
-@ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "There is no such user")//ovverite message
+    @ExceptionHandler(MyExc.class)
+    protected ResponseEntity handleMyExc(final MyExc exc) {
+        return new ResponseEntity(exc.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MyExc2.class)
+    protected ResponseEntity handleMyExc2(final MyExc2 exc) {
+        return new ResponseEntity(exc.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    protected ResponseEntity handleRuntimeException(final RuntimeException exc) {
+        return new ResponseEntity(exc.getMessage(), HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity handleException(final Exception exc) {
+        return new ResponseEntity(exc.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+}
+//@ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "There is no such user")//ovverite message
 class MyExc extends RuntimeException{
     public MyExc(String message) {
+        super(message);
+    }
+}
+
+//@ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "NO CORRECT DATA")//ovverite message
+class MyExc2 extends RuntimeException{
+    public MyExc2(String message) {
         super(message);
     }
 }

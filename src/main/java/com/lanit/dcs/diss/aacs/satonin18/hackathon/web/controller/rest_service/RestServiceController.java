@@ -167,4 +167,49 @@ public class RestServiceController {
 
 		return  car; //=HttpStatus.OK//200
 	}
+
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/test2", method = RequestMethod.GET)
+	public Car test2() {
+		Car car = new Car();
+		car.setId(2L);
+		car.setOwnerId(2L);
+		car.setModel("22222*");
+		car.setVendor("*2222222");
+		car.setHorsepower(2);
+
+		if(true) throw new MyExc2("22222");
+
+		return  car; //=HttpStatus.OK//200
+	}
+
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/test3", method = RequestMethod.GET)
+	public Car test3() {
+		Car car = new Car();
+		car.setId(3L);
+		car.setOwnerId(3L);
+		car.setModel("333*");
+		car.setVendor("*3333");
+		car.setHorsepower(3);
+
+		if(true) throw new RuntimeException("3333");
+
+		return  car; //=HttpStatus.OK//200
+	}
+
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/test4", method = RequestMethod.GET)
+	public Car test4() throws Exception {
+		Car car = new Car();
+		car.setId(4L);
+		car.setOwnerId(4L);
+		car.setModel("4444*");
+		car.setVendor("*4444");
+		car.setHorsepower(4);
+
+		if(true) throw new Exception("4444");
+
+		return  car; //=HttpStatus.OK//200
+	}
 }
