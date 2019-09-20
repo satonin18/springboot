@@ -48,7 +48,7 @@ public class RestServiceController {
 			person.setName(dto.getName());
 			person.setBirthdate(dto.getBirthdate());
 
-			personService.save(person);
+			personService.save(person);//can be add:@Transactional(rollbackFor = Exception.class)
 
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e){
@@ -65,7 +65,6 @@ public class RestServiceController {
 			// VALIDATE ------------------------------------
 			if (bindingResult.hasErrors()) throw new Exception();
 			if ( carService.existsById(dto.getId()) ) throw new Exception();
-			if(dto.getHorsepower() <= 0) throw new Exception();
 
 			Person ownerPerson = personService.findById(dto.getOwnerId()).orElseThrow( () -> new Exception() );
 			LocalDate birthday = ownerPerson.getBirthdate();
@@ -83,7 +82,8 @@ public class RestServiceController {
 //			car.setPerson(ownerPerson);
 			car.setOwnerId(ownerPerson.getId());
 
-			carService.save(car);
+			carService.save(car);//can be add:@Transactional(rollbackFor = Exception.class)
+
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
