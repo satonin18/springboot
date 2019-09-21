@@ -2,6 +2,7 @@ package com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.input.valid;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -9,9 +10,15 @@ import javax.validation.constraints.Positive;
 
 @Data
 @NoArgsConstructor
+@ToString //ATTATION on EDIT !!!
 public class CarDto4save {
 
+//    без groups, чтоб код был чище
+//    interface New {
+//    }
+
     //такой id не дожен лежать в бд
+    //проверка в контроллере
     @NotNull
     Long id;
 
@@ -23,7 +30,8 @@ public class CarDto4save {
     @Positive
     Integer horsepower;
 
-    //он должен быть старше 18 лет
+    //он должен быть, и быть старше 18 лет
+    //проверка на уровне валидации Entity
     @NotNull
     Long ownerId;
 }

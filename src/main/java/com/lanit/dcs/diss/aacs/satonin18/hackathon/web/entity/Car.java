@@ -18,7 +18,9 @@ import javax.persistence.*;
 //@JsonIgnoreProperties({"person", "vendor", "model"})
 public class Car {
 
-//    @NotExistCarWithTheId //todo долго вникать!!! https://habr.com/ru/post/424819/
+
+
+//    @NotExistCarWithTheId //todo не рекомендуют делать запрос в бд через анотацию, или как сделать её на https://habr.com/ru/post/424819/
 
     @Id
     @Column(name = "id", nullable = false)
@@ -47,8 +49,6 @@ public class Car {
     }
 
 
-
-//    @Range(min=1)
 
     @Column(name = "horsepower", nullable = false)
     Integer horsepower;

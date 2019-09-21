@@ -18,9 +18,13 @@ import java.time.LocalDate;
 @ToString //ATTATION on EDIT !!!
 public class PersonDto4save {
 
+//    без groups, чтоб код был чище
+//    interface New {
+//    }
 
     //такой id не дожен лежать в бд
-    @NotNull
+    //проверка в контроллере
+     @NotNull
     Long id;
 
 

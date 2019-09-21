@@ -37,6 +37,7 @@ public class RestServiceController {
 		this.validator = validator;
 	}
 
+	//@JsonView(Details.class) //can be have ONE dto on input and on output
 	@RequestMapping(value = "/person", method = RequestMethod.POST)
 	public ResponseEntity save_person(
 			@Valid @RequestBody PersonDto4save dto,
@@ -46,6 +47,7 @@ public class RestServiceController {
 			// VALIDATE ------------------------------------
 			if (bindingResult.hasErrors()) throw new Exception();
 			if ( personService.existsById(dto.getId()) ) throw new Exception();
+			//(else)todo многопоточная коллиция на добавление(т.к. в SpringDataJpa есть только save NO UPDATE)
 			//------------------------------------
 			Person person = new Person();
 			person.setId(dto.getId());
@@ -69,6 +71,8 @@ public class RestServiceController {
 			// VALIDATE ------------------------------------
 			if (bindingResult.hasErrors()) throw new Exception();
 			if ( carService.existsById(dto.getId()) ) throw new Exception();
+			//(else)todo многопоточная коллиция на добавление(т.к. в SpringDataJpa есть только save NO UPDATE)
+
 			Person ownerPerson = personService.findById(dto.getOwnerId()).orElseThrow( () -> new Exception() );
 			//------------------------------------
 			String[] fullName = dto.getModel().split("-",2);
