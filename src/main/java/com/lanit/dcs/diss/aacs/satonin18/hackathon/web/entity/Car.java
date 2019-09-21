@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "cars")
 
-//@JsonIgnoreProperties({"person", "vendor", "model"})
+//@JsonIgnoreProperties({""})
 public class Car {
 
 

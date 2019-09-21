@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,10 +20,12 @@ import java.util.List;
 @Entity
 @Table(name = "persons")
 
-//@JsonIgnoreProperties({"cars"})
+//@JsonIgnoreProperties({""})
 public class Person {
 
 
+
+    @NotNull
 
     @Id
     @Column(name = "id", nullable = false)
@@ -29,10 +34,16 @@ public class Person {
 
 
 
+    @NotNull
+    @Size(max = 100)
+
     @Column(name = "name", nullable = false, length = 100)
     String name;
 
 
+
+    @NotNull //can be remove
+    @Past
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PropertiesApp.DATA_FORMAT_BIRTHDATE)
     @JsonDeserialize(using = LocalDateDeserializer.class)

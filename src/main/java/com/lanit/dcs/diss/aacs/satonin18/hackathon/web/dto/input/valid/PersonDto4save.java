@@ -23,7 +23,6 @@ public class PersonDto4save {
 
 
 
-
     //такой id не дожен лежать в бд
     //проверка в контроллере
      @NotNull
@@ -44,4 +43,5 @@ public class PersonDto4save {
     @Past
 
     LocalDate birthdate;
+
 }
