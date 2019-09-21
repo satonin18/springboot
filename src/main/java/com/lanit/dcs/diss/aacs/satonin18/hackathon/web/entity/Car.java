@@ -8,6 +8,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
@@ -21,12 +25,17 @@ public class Car {
 
 
 //    @NotExistCarWithTheId //todo не рекомендуют делать запрос в бд через анотацию, или как сделать её на https://habr.com/ru/post/424819/
+    @NotNull
 
     @Id
     @Column(name = "id", nullable = false)
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+
+
+    @NotNull
+    @Pattern(regexp = "^[^-]{1,50}$") //"^"=start  "$"=end  "[^-]"=любой_символ_кромеТИРЕ  "."=любой_символ  "+"=OneOrMore "{1,50}"-min=1,max=50
 
 
     @JsonIgnore
@@ -36,6 +45,9 @@ public class Car {
 
 
 
+    @NotNull
+    @Size(min = 1, max = 50)
+
     @JsonIgnore
 
     @Column(name = "model", nullable = false, length = 50)
@@ -44,20 +56,23 @@ public class Car {
 
 
     @JsonProperty("model")
-    String model(){
+    String getModel(){
         return String.join("-",vendor, model);
     }
 
 
+
+    @NotNull
+    @Positive
 
     @Column(name = "horsepower", nullable = false)
     Integer horsepower;
 
 
 
-    @JsonIgnore
+    @Have18Age //include test on //@NotNull
 
-    @Have18Age
+    @JsonIgnore
 
     @ManyToOne
     @JoinColumn(name = "ownerId", referencedColumnName = "id", nullable = false)
@@ -68,7 +83,7 @@ public class Car {
 //    @Column(name = "ownerId", nullable = false)
 //    Long ownerId;
     @JsonProperty("ownerId")
-    Long ownerId(){
+    Long getOwnerId(){
         return person.getId();
     }
 }

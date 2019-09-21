@@ -15,12 +15,14 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
-@ToString //ATTATION on EDIT !!!
+@ToString
 public class PersonDto4save {
-
-//    без groups, чтоб код был чище
+//    без groups = {New.class}, чтоб код был чище
 //    interface New {
 //    }
+
+
+
 
     //такой id не дожен лежать в бд
     //проверка в контроллере

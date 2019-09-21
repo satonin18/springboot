@@ -10,28 +10,24 @@ import javax.validation.constraints.Positive;
 
 @Data
 @NoArgsConstructor
-@ToString //ATTATION on EDIT !!!
+@ToString
 public class CarDto4save {
+//    без groups = {New.class}, чтоб код был чище
+//    interface New {}
 
-//    без groups, чтоб код был чище
-//    interface New {
-//    }
-
-    //такой id не дожен лежать в бд
-    //проверка в контроллере
+    //такой id не дожен лежать в бд //проверка в контроллере/сервисе
     @NotNull
     Long id;
 
     @NotNull
     @Pattern(regexp = "^[^-]{1,50}-.{1,50}$") //"^"=start  "$"=end  "[^-]"=любой_символ_кромеТИРЕ  "."=любой_символ  "+"=OneOrMore "{1,50}"-min=1,max=50
-    String model; //имя переменой совпадает с другой переменой
+    String model;
 
     @NotNull
     @Positive
     Integer horsepower;
 
-    //он должен быть, и быть старше 18 лет
-    //проверка на уровне валидации Entity
+    //Person должен быть в бд, и быть старше 18 лет //проверка на уровне валидации Entity
     @NotNull
     Long ownerId;
 }
