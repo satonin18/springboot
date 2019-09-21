@@ -7,6 +7,7 @@ import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.entity.Car;
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.entity.Person;
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.service.CarService;
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.service.PersonService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,16 +45,22 @@ public class RestServiceController {
 			BindingResult bindingResult
 	) {
 		try {
-			// VALIDATE ------------------------------------
+			// VALIDATE DTO ------------------------------------
 			if (bindingResult.hasErrors()) throw new Exception();
 			if ( personService.existsById(dto.getId()) ) throw new Exception();
-			//(else)todo многопоточная коллиция на добавление(т.к. в SpringDataJpa есть только save NO UPDATE)
-			//------------------------------------
+			//(else)todo многопоточная коллизия на добавление(+ в SpringDataJpa есть только save, NO UPDATE)
+			// MAPPING ------------------------------------
 			Person person = new Person();
-			person.setId(dto.getId());
-			person.setName(dto.getName());
-			person.setBirthdate(dto.getBirthdate());
-
+			ModelMapper mapper = new ModelMapper();
+			mapper.map(dto, person);
+			// VALIDATE ENTITY ------------------------------------
+			Set<ConstraintViolation<Person>> validates = validator.validate(person);
+			if(validates.size() > 0) {
+				String errors = validates.stream().map(v -> v.getMessage())
+						.collect(Collectors.joining());//todo check for 2 and more
+				throw new Exception(errors);
+			}
+			// SAVE ------------------------------------
 			personService.save(person);//can be add:@Transactional(rollbackFor = Exception.class)
 
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -74,24 +81,23 @@ public class RestServiceController {
 			//(else)todo многопоточная коллиция на добавление(т.к. в SpringDataJpa есть только save NO UPDATE)
 
 			Person ownerPerson = personService.findById(dto.getOwnerId()).orElseThrow( () -> new Exception() );
-			//------------------------------------
+			// MAPPING -----------------------------------------------------------
 			String[] fullName = dto.getModel().split("-",2);
-
 			Car car = new Car();
 			car.setId(dto.getId());
 			car.setHorsepower(dto.getHorsepower());
 			car.setVendor(fullName[0]);
 			car.setModel(fullName[1]);
-
 			car.setPerson(ownerPerson);
 //			car.setOwnerId(ownerPerson.getId());
-
+			// VALIDATE ENTITY --------------------------------------------------
 			Set<ConstraintViolation<Car>> validates = validator.validate(car);
 			if(validates.size() > 0) {
 				String errors = validates.stream().map(v -> v.getMessage())
 						.collect(Collectors.joining());//todo check for 2 and more
 				throw new Exception(errors);
 			}
+			// SAVE ------------------------------------
 			carService.save(car);//can be add:@Transactional(rollbackFor = Exception.class)
 
 			return new ResponseEntity<>(HttpStatus.OK);
