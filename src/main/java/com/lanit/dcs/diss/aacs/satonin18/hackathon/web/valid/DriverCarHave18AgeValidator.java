@@ -1,8 +1,6 @@
 package com.lanit.dcs.diss.aacs.satonin18.hackathon.web.valid;
 
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.entity.Person;
-import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.service.PersonService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

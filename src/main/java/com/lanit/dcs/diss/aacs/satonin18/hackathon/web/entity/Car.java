@@ -74,13 +74,13 @@ public class Car {
 
     @JsonIgnore
 
-    @ManyToOne
+    @ManyToOne//(cascade = CascadeType.ALL)
     @JoinColumn(name = "ownerId", referencedColumnName = "id", nullable = false)
     private Person person;
 
 
 
-//    @Column(name = "ownerId", nullable = false)
+//    @Column(name = "ownerId", insertable = false, updatable = false, nullable = false
 //    Long ownerId;
     @JsonProperty("ownerId")
     Long getOwnerId(){

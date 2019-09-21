@@ -7,7 +7,9 @@ import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.entity.Car;
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.entity.Person;
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.service.CarService;
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.service.PersonService;
+import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.service.StatisticsService;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.Validator;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,39 +29,36 @@ public class RestServiceController {
 
 	private final PersonService personService;
 	private final CarService carService;
-	private final Validator validator;
+	private final StatisticsService statisticsService;
+	private final Validator validatorDto;
 
 	@Autowired
-	public RestServiceController(final PersonService personService, final CarService carService, final Validator validator) {
+	public RestServiceController(
+			final PersonService personService,
+			final CarService carService,
+			final StatisticsService statisticsService,
+			final Validator validatorDto
+	) {
 		this.personService = personService;
 		this.carService = carService;
-		this.validator = validator;
+		this.statisticsService = statisticsService;
+		this.validatorDto = validatorDto;
 	}
 
-	//@JsonView(Details.class) //can be have ONE dto on input and on output
 	@RequestMapping(value = "/person", method = RequestMethod.POST)
 	public ResponseEntity save_person(
 			@Valid @RequestBody PersonDto4save dto,
 			BindingResult bindingResult
 	) {
 		try {
-			// VALIDATE DTO ------------------------------------
+			// VALIDATE DTO -----------------------------------------------------
 			if (bindingResult.hasErrors()) throw new Exception();
-			if ( personService.existsById(dto.getId()) ) throw new Exception();
-			//(else)todo многопоточная коллизия на добавление(+ в SpringDataJpa есть только save, NO UPDATE)
-			// MAPPING ------------------------------------
+			// MAPPING -----------------------------------------------------
 			Person person = new Person();
 			ModelMapper mapper = new ModelMapper();
 			mapper.map(dto, person);
-			// VALIDATE ENTITY ------------------------------------
-			Set<ConstraintViolation<Person>> validates = validator.validate(person);
-			if(validates.size() > 0) {
-				String errors = validates.stream().map(v -> v.getMessage())
-						.collect(Collectors.joining());//todo check for 2 and more
-				throw new Exception(errors);
-			}
-			// SAVE ------------------------------------
-			personService.save(person);//can be add:@Transactional(rollbackFor = Exception.class)
+			// ----------------------------------------------------------------------
+			personService.savePerson(person); // -> validation entity
 
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e){
@@ -75,30 +72,31 @@ public class RestServiceController {
 			BindingResult bindingResult
 	) {
 		try {
-			// VALIDATE ------------------------------------
+			// VALIDATE DTO ----------------------------------------------------------------------
 			if (bindingResult.hasErrors()) throw new Exception();
-			if ( carService.existsById(dto.getId()) ) throw new Exception();
-			//(else)todo многопоточная коллиция на добавление(т.к. в SpringDataJpa есть только save NO UPDATE)
-
-			Person ownerPerson = personService.findById(dto.getOwnerId()).orElseThrow( () -> new Exception() );
-			// MAPPING -----------------------------------------------------------
-			String[] fullName = dto.getModel().split("-",2);
+			// todo replace on custom Mapper -----------------------------------------------
+//			ModelMapper mapper = new ModelMapper();
+//			mapper.addMappings(new PropertyMap<CarDto4save, Car>() {
+//				protected void configure() {
+//					String[] fullName = source.getModel().split("-",2);
+//					map().setVendor(fullName[0]);
+//					map().setModel(fullName[1]);
+//					Person ownerPerson = personService.findById(source.getOwnerId()).orElseThrow( () -> new RuntimeException("no find ownerPerson") );
+//					map().setPerson(ownerPerson);
+//				}
+//			});
+//			mapper.map(dto, car);
+			// MAPPING ----------------------------------------------------------------------
 			Car car = new Car();
 			car.setId(dto.getId());
 			car.setHorsepower(dto.getHorsepower());
+			String[] fullName = dto.getModel().split("-",2);
 			car.setVendor(fullName[0]);
 			car.setModel(fullName[1]);
+			Person ownerPerson = personService.findById(dto.getOwnerId()).orElseThrow( () -> new Exception() );
 			car.setPerson(ownerPerson);
-//			car.setOwnerId(ownerPerson.getId());
-			// VALIDATE ENTITY --------------------------------------------------
-			Set<ConstraintViolation<Car>> validates = validator.validate(car);
-			if(validates.size() > 0) {
-				String errors = validates.stream().map(v -> v.getMessage())
-						.collect(Collectors.joining());//todo check for 2 and more
-				throw new Exception(errors);
-			}
-			// SAVE ------------------------------------
-			carService.save(car);//can be add:@Transactional(rollbackFor = Exception.class)
+			// VALIDATE ENTITY -----------------------------------------------------------------
+			carService.saveCar(car);
 
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e){
@@ -106,42 +104,33 @@ public class RestServiceController {
 		}
 	}
 
-	//todo replace output on PersonWithCarsDto from mapping
+	//todo can return PersonWithCarsDto from mapping
 	@RequestMapping(value = "/personwithcars", method = RequestMethod.GET)
 	public ResponseEntity<Person> get_personwithcars(
-			Long personid //todo Long (not null)
+			Long personid
 	) {
 		try {
-	        if (personid == null) throw new Exception();
+	        if(personid == null) throw new Exception();
 
-			if ( ! personService.existsById(personid) ) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			Person person = personService.findById(personid).get();
+			Person person = personService.getPerson(personid);
+
 			if(person == null)
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			else
 				return new ResponseEntity<Person>(
 					person,
 					HttpStatus.OK
-			);
+				);
 		} catch (Exception e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
 
+
 	@RequestMapping(value = "/statistics", method = RequestMethod.GET)
 	public ResponseEntity<StatisticsDto> statistics() {
 		try {
-			Long personcount = personService.count();
-			Long carcount = carService.count();
-			Long uniquevendorcount = carService.countDistinctVendor();
-
-			if(personcount == null || carcount == null || uniquevendorcount == null)
-				throw new Exception();
-
-			StatisticsDto statisticsDto = new StatisticsDto();
-			statisticsDto.setPersoncount(personcount);
-			statisticsDto.setCarcount(carcount);
-			statisticsDto.setUniquevendorcount(uniquevendorcount);
+			StatisticsDto statisticsDto = statisticsService.getStatisticsDto();
 
 			return new ResponseEntity<StatisticsDto>(
 					statisticsDto,
@@ -151,6 +140,8 @@ public class RestServiceController {
 			return new ResponseEntity(HttpStatus.OK);
 		}
 	}
+
+
 
 	//todo no rest, GET-reguest = edit state
 	@RequestMapping(value = "/clear", method = RequestMethod.GET)
