@@ -106,6 +106,7 @@ public class RestServiceController {
 		}
 	}
 
+	//todo replace output on PersonWithCarsDto from mapping
 	@RequestMapping(value = "/personwithcars", method = RequestMethod.GET)
 	public ResponseEntity<Person> get_personwithcars(
 			Long personid //todo Long (not null)
