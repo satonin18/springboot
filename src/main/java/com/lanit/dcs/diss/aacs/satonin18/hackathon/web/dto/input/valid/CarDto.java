@@ -11,7 +11,7 @@ import javax.validation.constraints.Positive;
 @Data
 @NoArgsConstructor
 @ToString
-public class CarDto4save {
+public class CarDto {
 //    без groups = {New.class}, чтоб код был чище
 //    interface New {}
 

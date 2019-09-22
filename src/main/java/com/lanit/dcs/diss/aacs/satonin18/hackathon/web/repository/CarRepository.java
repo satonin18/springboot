@@ -11,6 +11,7 @@ import java.util.List;
 public interface CarRepository
         extends JpaRepository<Car, Long>
 {
+    //todo НЕ ПОДЕРЖИВАЕТ ВЫЧЕСЛЯЕМОЕ ПОЛЕ ВНУТРИ ДРУГОГО ПОЛЯ //select count(distinct lower(field)) //перейти на nativeQuery
     @Query("SELECT DISTINCT lower(c.vendor) FROM Car c")
     List<String> allDistinctVendorIgnorCase();
 }

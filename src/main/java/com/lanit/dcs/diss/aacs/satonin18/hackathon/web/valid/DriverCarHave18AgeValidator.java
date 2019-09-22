@@ -11,10 +11,6 @@ public class DriverCarHave18AgeValidator implements ConstraintValidator<Have18Ag
 
     private static final int ADULT_AGE = 18;
 
-//    @Autowired
-//    private PersonService personService;
-    //todo constructor
-
     @Override
     public void initialize(Have18Age have18Age) {
 

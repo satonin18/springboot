@@ -16,16 +16,15 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @ToString
-public class PersonDto4save {
+public class PersonDto {
 //    без groups = {New.class}, чтоб код был чище
 //    interface New {
 //    }
 
 
 
-    //такой id не дожен лежать в бд
-    //проверка в контроллере
-     @NotNull
+    //такой id не дожен лежать в бд //проверка в контроллере/сервисе
+    @NotNull
     Long id;
 
 

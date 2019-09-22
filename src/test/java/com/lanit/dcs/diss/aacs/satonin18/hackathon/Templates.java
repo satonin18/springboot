@@ -1,8 +1,6 @@
 package com.lanit.dcs.diss.aacs.satonin18.hackathon;
 
 
-import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.input.valid.CarDto4save;
-import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.dto.input.valid.PersonDto4save;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.logging.log4j.util.Strings;
