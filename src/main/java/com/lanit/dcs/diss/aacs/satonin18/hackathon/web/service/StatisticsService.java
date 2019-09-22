@@ -18,7 +18,7 @@ public class StatisticsService {
     public StatisticsDto getStatisticsDto() throws Exception {
         Long personcount = personRepository.count();
         Long carcount = carRepository.count();
-        Long uniquevendorcount = Long.valueOf(carRepository.allDistinctVendorIgnorCase().size());
+        Long uniquevendorcount = carRepository.countDistinctVendorIgnorCase();
 
         if(personcount == null || carcount == null || uniquevendorcount == null)
             throw new Exception();

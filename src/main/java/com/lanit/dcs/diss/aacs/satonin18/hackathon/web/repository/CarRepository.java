@@ -2,6 +2,7 @@ package com.lanit.dcs.diss.aacs.satonin18.hackathon.web.repository;
 
 import com.lanit.dcs.diss.aacs.satonin18.hackathon.web.entity.Car;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import java.util.List;
 public interface CarRepository
         extends JpaRepository<Car, Long>
 {
-    //todo НЕ ПОДЕРЖИВАЕТ ВЫЧЕСЛЯЕМОЕ ПОЛЕ ВНУТРИ ДРУГОГО ПОЛЯ //select count(distinct lower(field)) //перейти на nativeQuery
-    @Query("SELECT DISTINCT lower(c.vendor) FROM Car c")
-    List<String> allDistinctVendorIgnorCase();
+    //ATATION !!! NATIVE QUERY (USE TALES "cars" and FIELD "vendor")
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT LOWER(c.vendor)) FROM cars c")
+    Long countDistinctVendorIgnorCase();
 }
