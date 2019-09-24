@@ -26,16 +26,13 @@ public class CarService {
         this.validatorEntity = validatorEntity;
     }
 
-    //todo check type javax.transactions
     @Transactional(rollbackFor = Exception.class)
     public void deleteAll() {
         carRepository.deleteAll();
     }
 
-    //todo check type javax.transactions
     @Transactional(rollbackFor = Exception.class)
     public void saveCar(
-//            @Valid //наверн тупой монитринг и запись ошибки, без каких либо предпринятых действий или исключений
              Car car
     ) throws Exception {
         if ( carRepository.existsById(car.getId()) ) throw new Exception();

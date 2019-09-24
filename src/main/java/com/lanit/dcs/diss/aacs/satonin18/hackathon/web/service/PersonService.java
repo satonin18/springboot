@@ -27,14 +27,11 @@ public class PersonService {
         this.validatorEntity = validatorEntity;
     }
 
-    //todo check type javax.transactions
     @Transactional(rollbackFor = Exception.class)
     public void deleteAll(){ personRepository.deleteAll(); }
 
-    //todo check type javax.transactions
     @Transactional(rollbackFor = Exception.class)
     public void savePerson(
-//            @Valid //наверн тупой монитринг и запись ошибки, без каких либо предпринятых действий или исключений
             Person person
     ) throws Exception {
         // VALIDATE DTO ------------------------------------
@@ -46,7 +43,6 @@ public class PersonService {
         }
         if ( personRepository.existsById(person.getId()) ) throw new Exception();
         //todo многопоточная коллизия на добавление(+ в SpringDataJpa есть только save, NO UPDATE)
-
         // SAVE ------------------------------------
         personRepository.save(person);//can be add:@Transactional(rollbackFor = Exception.class)
     }
