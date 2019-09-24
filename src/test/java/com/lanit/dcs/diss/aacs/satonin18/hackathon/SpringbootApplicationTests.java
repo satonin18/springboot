@@ -1,1113 +1,925 @@
 package com.lanit.dcs.diss.aacs.satonin18.hackathon;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
-import io.restassured.response.Response;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-import static com.lanit.dcs.diss.aacs.satonin18.hackathon.Templates.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//TODO ИЗ ЗА ТОГО ЧТО МЕТОДЫ ЗАПУСКАЮТСЯ В ХАОТИЧНОМ ПОРЯДКЕ ТО НУЖНО ПЕРЕД КАЖДЫМ ПОСТВАИТЬ ОЧИСТКУ
-//TODO JSON-parsing and check every var
-
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = { SpringbootApplication.class },
-        webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@RunWith(SpringJUnit4ClassRunner.class)//@RunWith(SpringRunner.class)
+@SpringBootTest(classes = { SpringbootApplication.class }//, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
+)
+@WebAppConfiguration
+//@WebMvcTest(RestServiceController.class)
+//@ActiveProfiles("test")
 public class SpringbootApplicationTests {
-    //can be replace
-    private HttpService http = new HttpService();
 
+//    private HttpService http = new HttpService(); // can be replace
+//    @InjectMocks
+//    private RestServiceController restServiceController;
+//    @Autowired
+
+    private MockMvc mockMvc;
+    @Autowired
+    WebApplicationContext webApplicationContext;
+
+    private static final String URL_CLEAR = "/clear";
+    private static final String URL_ADD_PERSON = "/person";
+    private static final String URL_ADD_CAR = "/car";
+    private static final String URL_GET_PERSON = "/personwithcars";
+    private static final String URL_STATISTICS = "/statistics";
+
+
+    @Before
+    public void setUp() throws Exception {
+        System.out.println("---------@Test-@Before--------------");
+
+//        MockitoAnnotations.initMocks(this);
+//
+////        this.mockMvc = MockMvcBuilders
+////                .standaloneSetup(restServiceController)
+//////                .addFilters(new CORSFilter())
+////                .build();
+//
+        this.mockMvc = MockMvcBuilders
+                .webAppContextSetup(webApplicationContext)
+                .build();
+
+        this.mockMvc.perform(get("/clear"))
+                .andExpect(status().isOk());
+    }
+    @After
+    public void tearDown() throws Exception {
+        System.out.println("---------@Test-@After--------------");
+    }
+
+//    @Test
+//    public void test() throws Exception {
+//        //ВНЕШНИЕ ТЕСТЫ (при запущенном сервере, также как soapUi)
+////        final String API_ROOT = "http://10.32.101.63:8080/hackathon";
+////        Response r = RestAssured.get(API_ROOT + "/clear");
+////        assertEquals(200,r.getStatusCode());
+//
+////        System.out.println(200);
+////
+////        this.mockMvc.perform(get("/clear")).andExpect(status().isOk());
+////
+////        System.out.println("OKKKKKKKKKKKKKKKKKKK");
+//    }
 
     @Test
-    public void testClear() {
-        System.out.println();
+    public void testClear() throws Exception {
         System.out.println("----testClear----");
 
-        http.clear();
-        test_add_person();
-        http.clear();
-        test_get();
+        String add_person = "{\"id\":\"-1\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(get(URL_CLEAR))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get(URL_CLEAR))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-1")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isNotFound());
 
         System.out.println("----------------");
     }
-    private void test_add_person() {
-        System.out.println("->test_add_person()");
-
-        Response r = http.addPerson(jsonMap.get("add_person").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_get() {
-        System.out.println("->test_get()");
-
-        Response r = http.get(jsonMap.get("get").getId());
-        assertEquals(HttpStatus.NOT_FOUND.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddvalid_person() {
-        System.out.println();
+    public void testAddvalid_person() throws Exception {
         System.out.println("----testAddvalid_person----");
 
-        test_add_valid1();
-        test_get1();
+        String add_person = "{\"id\":-10,\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\",\"cars\":[]}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-10")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-10"))
+                .andExpect(jsonPath("$.name").value("valid_person1"))
+                .andExpect(jsonPath("$.birthdate").value("01.01.2000"))
+                .andExpect(jsonPath("$.cars", hasSize(0)));
 
         System.out.println("----------------");
     }
-    private void test_add_valid1() {
-        System.out.println("->test_add_valid1()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid1").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_get1() {
-        System.out.println("->test_get1()");
-
-        Response r = http.get(jsonMap.get("get1").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("get1").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddvalid_personLess18() {
-        System.out.println();
+    public void testAddvalid_personLess18() throws Exception {
         System.out.println("----testAddvalid_personLess18----");
 
-        test_add_valid2();
-        test_get2();
+        String add_person  = "{\"id\":\"-20\",\"name\":\"valid_person2\",\"birthdate\":\"01.12.2017\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-20")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-20"))
+                .andExpect(jsonPath("$.name").value("valid_person2"))
+                .andExpect(jsonPath("$.birthdate").value("01.12.2017"))
+                .andExpect(jsonPath("$.cars", hasSize(0)));
 
         System.out.println("----------------");
     }
-    private void test_add_valid2() {
-        System.out.println("->check_add_valid2()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid2").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_get2() {
-        System.out.println("->test_get2()");
-
-        Response r = http.get(jsonMap.get("get2").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("get2").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddvalid_personEmptyName() {
-        System.out.println();
+    public void testAddvalid_personEmptyName() throws Exception {
         System.out.println("----testAddvalid_personEmptyName----");
 
-        test_add_valid3_emptyname();
-        test_get3();
+        String add_person  = "{\"id\":\"-30\",\"name\":\"\",\"birthdate\":\"01.12.2017\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-30")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-30"))
+                .andExpect(jsonPath("$.name").value(""))
+                .andExpect(jsonPath("$.birthdate").value("01.12.2017"))
+                .andExpect(jsonPath("$.cars", hasSize(0)));
 
         System.out.println("----------------");
     }
-    private void test_add_valid3_emptyname() {
-        System.out.println("->check_add_valid3_emptyname()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid3_emptyname").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_get3() {
-        System.out.println("->test_get3()");
-
-        Response r = http.get(jsonMap.get("get3").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check var name = "";
-        //simple approach
-        assertEquals(jsonMap.get("get3").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadPersonFutureBirthdate() {
-        System.out.println();
+    public void testAddBadPersonFutureBirthdate() throws Exception {
         System.out.println("----testAddValidFutureBirthdate----");
 
-        test_add_notvalid4_futurebirthdate();
-        test_getnot4();
+        String add_person = "{\"id\":\"-39\",\"name\":\"valid\",\"birthdate\":\"01.12.2117\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-39")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isNotFound());
 
         System.out.println("----------------");
     }
-    private void test_add_notvalid4_futurebirthdate() {
-        System.out.println("->check_add_valid4_futurebirthdate()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid4_futurebirthdate").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getnot4() {
-        System.out.println("->test_getnot4()");
-
-        Response r = http.get(jsonMap.get("getnot4").getId());
-        assertEquals(HttpStatus.NOT_FOUND.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadPersonEmptyId() {
-        System.out.println();
+    public void testAddBadPersonEmptyId() throws Exception {
         System.out.println("----testAddBadPersonEmptyId----");
 
-        test_add_notvalid_emptyid();
+        String add_person = "{\"id\":\"\",\"name\":\"valid\",\"birthdate\":\"01.12.2017\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isBadRequest());
 
         System.out.println("----------------");
     }
-    private void test_add_notvalid_emptyid() {
-        System.out.println("->test_add_notvalid_emptyid()");
-
-        Response r = http.addPerson(jsonMap.get("add_notvalid_emptyid").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadPersonNullId() {
-        System.out.println();
+    public void testAddBadPersonNullId() throws Exception {
         System.out.println("----testAddBadPersonNullId----");
 
-        test_add_notvalid_nullid();
+
+        String add_person = "{\"name\":\"valid\",\"birthdate\":\"01.12.2017\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isBadRequest());
 
         System.out.println("----------------");
     }
-    private void test_add_notvalid_nullid() {
-        System.out.println("->test_add_notvalid_nullid()");
-
-        Response r = http.addPerson(jsonMap.get("add_notvalid_nullid").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadPersonNullName() {
-        System.out.println();
+    public void testAddBadPersonNullName() throws Exception {
         System.out.println("----testAddBadPersonNullName----");
 
-        test_add_notvalid5_nullname();
-        test_getnot5();
+        String add_person = "{\"id\":\"-70\",\"birthdate\":\"01.12.2017\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-70")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isNotFound());
 
         System.out.println("----------------");
     }
-    private void test_add_notvalid5_nullname() {
-        System.out.println("->test_add_notvalid5_nullname()");
-
-        Response r = http.addPerson(jsonMap.get("add_notvalid5_nullname").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getnot5() {
-        System.out.println("->test_getnot5()");
-
-        Response r = http.get(jsonMap.get("getnot5").getId());
-        assertEquals(HttpStatus.NOT_FOUND.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadPersonNullBirthdate() {
-        System.out.println();
+    public void testAddBadPersonNullBirthdate() throws Exception {
         System.out.println("----testAddBadPersonNullBirthdate----");
 
-        test_add_notvalid6_nullbirthdate();
-        test_getnot6();
+        String add_person = "{\"id\":\"-80\",\"name\":\"valid\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-80")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isNotFound());
 
         System.out.println("----------------");
     }
-    private void test_add_notvalid6_nullbirthdate() {
-        System.out.println("->test_add_notvalid6_nullbirthdate()");
-
-        Response r = http.addPerson(jsonMap.get("add_notvalid6_nullbirthdate").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getnot6() {
-        System.out.println("->test_getnot6()");
-
-        Response r = http.get(jsonMap.get("getnot6").getId());
-        assertEquals(HttpStatus.NOT_FOUND.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadPersonIncorrectBirthdate() {
-        System.out.println();
+    public void testAddBadPersonIncorrectBirthdate() throws Exception {
         System.out.println("----testAddBadPersonIncorrectBirthdate----");
 
-        test_add_notvalid7_incorrectbirthdate();
-        test_getnot7();
+        String add_person = "{\"id\":\"-90\",\"name\":\"valid_person2\",\"birthdate\":\"2017-01-01\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-90")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isNotFound());
 
         System.out.println("----------------");
     }
-    private void test_add_notvalid7_incorrectbirthdate() {
-        System.out.println("->test_add_notvalid7_incorrectbirthdate()");
-
-        Response r = http.addPerson(jsonMap.get("add_notvalid7_incorrectbirthdate").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getnot7() {
-        System.out.println("->test_getnot7()");
-
-        Response r = http.get(jsonMap.get("getnot7").getId());
-        assertEquals(HttpStatus.NOT_FOUND.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadPersonLanientBirthdate() {
-        System.out.println();
+    public void testAddBadPersonLanientBirthdate() throws Exception {
         System.out.println("----testAddBadPersonLanientBirthdate----");
 
-        test_add_notvalid8_lanientbirthdate();
-        test_getnot8();
+        String add_person = "{\"id\":\"-100\",\"name\":\"valid_person2\",\"birthdate\":\"01.15.2017\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-100")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isNotFound());
 
         System.out.println("----------------");
     }
-    private void test_add_notvalid8_lanientbirthdate() {
-        System.out.println("->test_add_notvalid8_lanientbirthdate()");
-
-        Response r = http.addPerson(jsonMap.get("add_notvalid8_lanientbirthdate").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getnot8() {
-        System.out.println("->test_getnot8()");
-
-        Response r = http.get(jsonMap.get("getnot8").getId());
-        assertEquals(HttpStatus.NOT_FOUND.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadPersonSymbolsBirthdate() {
-        System.out.println();
+    public void testAddBadPersonSymbolsBirthdate() throws Exception {
         System.out.println("----testAddBadPersonSymbolsBirthdate----");
 
-        test_add_notvalid9_symbolsbirthdate();
-        test_getnot9();
+        String add_person = "{\"id\":\"-110\",\"name\":\"valid_person2\",\"birthdate\":\"sds\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-110")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isNotFound());
 
         System.out.println("----------------");
     }
-    private void test_add_notvalid9_symbolsbirthdate() {
-        System.out.println("->test_add_notvalid9_symbolsbirthdate()");
-
-        Response r = http.addPerson(jsonMap.get("add_notvalid9_symbolsbirthdate").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getnot9() {
-        System.out.println("->test_getnot9()");
-
-        Response r = http.get(jsonMap.get("getnot9").getId());
-        assertEquals(HttpStatus.NOT_FOUND.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testGetBadEmptyNullPassword() {
-        System.out.println();
+    public void testGetBadEmptyNullPassword() throws Exception {
         System.out.println("----testGetBadEmptyNullPassword----");
 
-        test_getnot_empty_personid();
-        test_getnot_null_personid();
-        test_getnot_personid_format();
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "     asdsad")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isBadRequest());
 
         System.out.println("----------------");
     }
-    private void test_getnot_empty_personid() {
-        System.out.println("->test_getnot_empty_personid()");
-
-        Response r = http.getEmptyValueParam();
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getnot_null_personid() {
-        System.out.println("->test_getnot_null_personid()");
-
-        Response r = http.getWithoutParam();
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getnot_personid_format() {
-        System.out.println("->test_getnot_personid_format()");
-
-        Response r = http.getWithBadStringParam("     asdsad");
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddValidCar1() {
-        System.out.println();
+    public void testAddValidCar1() throws Exception {
         System.out.println("----testAddValidCar1----");
 
-        test_add_valid_person1();
-        test_add_car1();
-        test_getcar1();
+        String add_person = "{\"id\":\"-130\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-130\",\"model\":\"BMW-X5\",\"horsepower\":100,\"ownerId\":\"-130\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-130")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-130"))
+                .andExpect(jsonPath("$.name").value("valid_person1"))
+                .andExpect(jsonPath("$.birthdate").value("01.01.2000"))
+                .andExpect(jsonPath("$.cars", hasSize(1)))
+                .andExpect(jsonPath("$.cars[?(@.model=='BMW-X5')]", hasSize(1)))
+                .andExpect(jsonPath("$.cars[?(@.model=='BMW-X5')].horsepower", hasSize(1)))
+                .andExpect(jsonPath("$.cars[?(@.model=='BMW-X5')].horsepower").value(100))
+        ;
+
 
         System.out.println("----------------");
     }
-    private void test_add_valid_person1() {
-        System.out.println("->test_add_valid_person1()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person1").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car1() {
-        System.out.println("->test_add_car1()");
-
-        Response r = http.addCar(jsonMap.get("add_car1").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getcar1() {
-        System.out.println("->test_getcar1()");
-
-        Response r = http.get(jsonMap.get("getcar1").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("getcar1").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
-
 
     @Test
-    public void testAddValidCars2() {
-        System.out.println();
+    public void testAddValidCars2() throws Exception {
         System.out.println("----testAddValidCars2----");
 
-        test_add_valid_person2();
-        test_add_car2();
-        test_add_car3();
-        test_add_car4();
-        test_getcars1();
+        String add_person = "{\"id\":\"-140\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
 
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-140\",\"model\":\"BMW-X5\",\"horsepower\":100,\"ownerId\":\"-140\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isOk());
+
+        String add_car2 = "{\"id\":\"-139\",\"model\":\"BMW-X3\",\"horsepower\":100,\"ownerId\":\"-140\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car2))
+                .andExpect(status().isOk());
+
+        String add_car3 = "{\"id\":\"-138\",\"model\":\"Lada-Devyatka\",\"horsepower\":50,\"ownerId\":\"-140\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car3))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-140")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-140"))
+                .andExpect(jsonPath("$.name").value("valid_person1"))
+                .andExpect(jsonPath("$.birthdate").value("01.01.2000"))
+                .andExpect(jsonPath("$.cars", hasSize(3)))
+
+                .andExpect(jsonPath("$.cars[?(@.model=='BMW-X3')]", hasSize(1)))
+                .andExpect(jsonPath("$.cars[?(@.model=='Lada-Devyatka')].horsepower", hasSize(1)))
+                .andExpect(jsonPath("$.cars[?(@.model=='Lada-Devyatka')].horsepower").value(50))
+                ;
         System.out.println("----------------");
     }
-    private void test_add_valid_person2() {
-        System.out.println("->test_add_valid_person2()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person2").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car2() {
-        System.out.println("->test_add_car2()");
-
-        Response r = http.addCar(jsonMap.get("add_car2").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car3() {
-        System.out.println("->test_add_car3()");
-
-        Response r = http.addCar(jsonMap.get("add_car3").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car4() {
-        System.out.println("->test_add_car4()");
-
-        Response r = http.addCar(jsonMap.get("add_car4").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getcars1() {
-        System.out.println("->test_getcars1()");
-
-        Response r = http.get(jsonMap.get("getcars1").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("getcars1").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
-
 
     @Test
-    public void testAddValidCars3_modelformat() {
-        System.out.println();
+    public void testAddValidCars3_modelformat() throws Exception {
         System.out.println("----testAddValidCars3_modelformat----");
 
-        test_add_valid_person3();
-        test_add_car5();
-        test_add_car6();
-        test_getcars2();
+        String add_person = "{\"id\":\"-150\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
 
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-149\",\"model\":\"La-da-Devyatka\",\"horsepower\":50,\"ownerId\":\"-150\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isOk());
+
+        String add_car2 = "{\"id\":\"-148\",\"model\":\"La-da-\",\"horsepower\":50,\"ownerId\":\"-150\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car2))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-150")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-150"))
+                .andExpect(jsonPath("$.name").value("valid_person1"))
+                .andExpect(jsonPath("$.birthdate").value("01.01.2000"))
+                .andExpect(jsonPath("$.cars", hasSize(2)))
+
+                .andExpect(jsonPath("$.cars[?(@.model=='Lada-Devyatka')].horsepower", hasSize(0)))
+                .andExpect(jsonPath("$.cars[?(@.model=='La-da-Devyatka')].horsepower", hasSize(1)))
+                .andExpect(jsonPath("$.cars[?(@.model=='La-da-Devyatka')].horsepower").value(50))
+                .andExpect(jsonPath("$.cars[?(@.model=='La-da-')].horsepower", hasSize(1)))
+                .andExpect(jsonPath("$.cars[?(@.model=='La-da-')].horsepower").value(50))
+        ;
         System.out.println("----------------");
-    }
-    private void test_add_valid_person3() {
-        System.out.println("->test_add_valid_person3()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person3").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car5() {
-        System.out.println("->test_add_car5()");
-
-        Response r = http.addCar(jsonMap.get("add_car5").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car6() {
-        System.out.println("->test_add_car6()");
-
-        Response r = http.addCar(jsonMap.get("add_car6").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getcars2() {
-        System.out.println("->test_getcars2()");
-
-        Response r = http.get(jsonMap.get("getcars2").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("getcars2").getJson(), r.getBody().print());
-
-        System.out.println("<-");
     }
 
     @Test
-    public void testAddBadCar_modelformat() {
-        System.out.println();
+    public void testAddBadCar_modelformat() throws Exception {
         System.out.println("----testAddBadCar_modelformat----");
 
-        test_add_valid_person4();
-        test_add_not_car7();
-        test_getcar2();
+        String add_person = "{\"id\":\"-160\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-160\",\"model\":\"-da-Devyatka\",\"horsepower\":50,\"ownerId\":\"-160\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-160")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-160"))
+                .andExpect(jsonPath("$.name").value("valid_person1"))
+                .andExpect(jsonPath("$.birthdate").value("01.01.2000"))
+                .andExpect(jsonPath("$.cars", hasSize(0)));
 
         System.out.println("----------------");
     }
-    private void test_add_valid_person4() {
-        System.out.println("->test_add_valid_person4()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person4").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_car7() {
-        System.out.println("->test_add_not_car7()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car7").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getcar2() {
-        System.out.println("->test_getcar2()");
-
-        Response r = http.get(jsonMap.get("getcar2").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("getcar2").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadCar_negative_horsepower() {
-        System.out.println();
+    public void testAddBadCar_negative_horsepower() throws Exception {
         System.out.println("----testAddBadCar_negative_horsepower----");
 
-        test_add_valid_person5();
-        test_add_not_car8();
-        test_getcar3();
+        String add_person = "{\"id\":\"-170\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-170\",\"model\":\"A-B\",\"horsepower\":-50,\"ownerId\":\"-170\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-170")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-170"))
+                .andExpect(jsonPath("$.name").value("valid_person1"))
+                .andExpect(jsonPath("$.birthdate").value("01.01.2000"))
+                .andExpect(jsonPath("$.cars", hasSize(0)));
 
         System.out.println("----------------");
     }
-    private void test_add_valid_person5() {
-        System.out.println("->test_add_valid_person5()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person5").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_car8() {
-        System.out.println("->test_add_not_car8()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car8").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getcar3() {
-        System.out.println("->test_getcar3()");
-
-        Response r = http.get(jsonMap.get("getcar3").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("getcar3").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadCar_less18years() {
-        System.out.println();
+    public void testAddBadCar_less18years() throws Exception {
         System.out.println("----testAddBadCar_less18years----");
 
-        test_add_valid_person_less18years();
-        test_add_not_car9();
-        test_getcar4();
+        String add_person = "{\"id\":\"-180\",\"name\":\"valid_person2\",\"birthdate\":\"01.12.2017\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-180\",\"model\":\"A-B\",\"horsepower\":50,\"ownerId\":\"-180\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-180")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-180"))
+                .andExpect(jsonPath("$.name").value("valid_person2"))
+                .andExpect(jsonPath("$.birthdate").value("01.12.2017"))
+                .andExpect(jsonPath("$.cars", hasSize(0)));
 
         System.out.println("----------------");
     }
-    private void test_add_valid_person_less18years() {
-        System.out.println("->test_add_valid_person_less18years()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person_less18years").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_car9() {
-        System.out.println("->test_add_not_car9()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car9").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getcar4() {
-        System.out.println("->test_getcar4()");
-
-        Response r = http.get(jsonMap.get("getcar4").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("getcar4").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadCar_emptyNullModel() {
-        System.out.println();
+    public void testAddBadCar_emptyNullModel() throws Exception {
         System.out.println("----testAddBadCar_emptyNullModel----");
 
-        test_add_valid_person6();
-        test_add_not_car10();
-        test_add_not_car11();
-        test_getcar5();
+        String add_person = "{\"id\":\"-190\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-190\",\"model\":\"\",\"horsepower\":50,\"ownerId\":\"-190\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isBadRequest());
+
+        String add_car2 = "{\"id\":\"-189\",\"horsepower\":50,\"ownerId\":\"-190\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car2))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-190")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-190"))
+                .andExpect(jsonPath("$.name").value("valid_person1"))
+                .andExpect(jsonPath("$.birthdate").value("01.01.2000"))
+                .andExpect(jsonPath("$.cars", hasSize(0)));
 
         System.out.println("----------------");
     }
-    private void test_add_valid_person6() {
-        System.out.println("->test_add_valid_person6()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person6").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_car10() {
-        System.out.println("->test_add_not_car10()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car10").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_car11() {
-        System.out.println("->test_add_not_car11()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car11").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getcar5() {
-        System.out.println("->test_getcar5()");
-
-        Response r = http.get(jsonMap.get("getcar5").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("getcar5").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadCar_emptyNullId() {
-        System.out.println();
+    public void testAddBadCar_emptyNullId() throws Exception {
         System.out.println("----testAddBadCar_emptyNullModel----");
 
-        test_add_valid_person7();
-        test_add_not_car12();
-        test_add_not_car13();
-        test_getcar6();
+        String add_person = "{\"id\":\"-200\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"\",\"model\":\"BMW-X3\",\"horsepower\":100,\"ownerId\":\"-200\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isBadRequest());
+
+        String add_car2 = "{\"model\":\"BMW-X3\",\"horsepower\":100,\"ownerId\":\"-200\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car2))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-200")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-200"))
+                .andExpect(jsonPath("$.name").value("valid_person1"))
+                .andExpect(jsonPath("$.birthdate").value("01.01.2000"))
+                .andExpect(jsonPath("$.cars", hasSize(0)));
 
         System.out.println("----------------");
     }
-    private void test_add_valid_person7() {
-        System.out.println("->test_add_valid_person7()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person7").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_car12() {
-        System.out.println("->test_add_not_car12()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car12").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_car13() {
-        System.out.println("->test_add_not_car13()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car13").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getcar6() {
-        System.out.println("->test_getcar6()");
-
-        Response r = http.get(jsonMap.get("getcar6").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("getcar6").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
-
-
 
     @Test
-    public void testAddBadCar_emptyNullZero_horsepower() {
-        System.out.println();
+    public void testAddBadCar_emptyNullZero_horsepower() throws Exception {
         System.out.println("----testAddBadCar_emptyNullZero_horsepower----");
 
-        test_add_valid_person8();
-        test_add_not_car14();
-        test_add_not_car15();
-        test_add_not_car16();
-        test_getcar7();
+        String add_person = "{\"id\":\"-210\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-210\",\"model\":\"BMW-X3\",\"horsepower\":\"\",\"ownerId\":\"-210\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isBadRequest());
+
+        String add_car2 = "{\"id\":\"-209\",\"model\":\"BMW-X3\",\"ownerId\":\"-210\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car2))
+                .andExpect(status().isBadRequest());
+
+        String add_car3 = "{\"id\":\"-208\",\"model\":\"BMW-X3\",\"horsepower\":\"0\",\"ownerId\":\"-210\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car3))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-210")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-210"))
+                .andExpect(jsonPath("$.name").value("valid_person1"))
+                .andExpect(jsonPath("$.birthdate").value("01.01.2000"))
+                .andExpect(jsonPath("$.cars", hasSize(0)));
 
         System.out.println("----------------");
     }
-    private void test_add_valid_person8() {
-        System.out.println("->test_add_valid_person8()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person8").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_car14() {
-        System.out.println("->test_add_not_car14()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car14").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_car15() {
-        System.out.println("->test_add_not_car15()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car15").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_car16() {
-        System.out.println("->test_add_not_car16()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car16").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_getcar7() {
-        System.out.println("->test_getcar7()");
-
-        Response r = http.get(jsonMap.get("getcar7").getId());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("getcar7").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
-
 
     @Test
-    public void testAddBadCar_emptyNull_ownerId() {
-        System.out.println();
+    public void testAddBadCar_emptyNull_ownerId() throws Exception {
         System.out.println("----testAddBadCar_emptyNull_ownerId----");
 
-        test_add_not_car17();
-        test_add_not_car18();
+        String add_person1 = "{\"id\":\"-220\",\"model\":\"BMW-X3\",\"horsepower\":\"100\",\"ownerId\":\"\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person1))
+                .andExpect(status().isBadRequest());
+
+        String add_person2 = "{\"id\":\"-219\",\"model\":\"BMW-X3\",\"horsepower\":\"100\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person2))
+                .andExpect(status().isBadRequest());
 
         System.out.println("----------------");
     }
-    private void test_add_not_car17() {
-        System.out.println("->test_add_not_car17()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car17").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_car18() {
-        System.out.println("->test_add_not_car18()");
-
-        Response r = http.addCar(jsonMap.get("add_not_car18").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadPerson_unique() {
-        System.out.println();
+    public void testAddBadPerson_unique() throws Exception {
         System.out.println("----testAddBadPerson_unique----");
 
-        test_add_valid_person9();
-        test_add_not_valid_uniqueperson();
+        String add_car1 = "{\"id\":\"-250\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isOk());
+
+        String add_car2 = "{\"id\":\"-250\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car2))
+                .andExpect(status().isBadRequest());
 
         System.out.println("----------------");
     }
-    private void test_add_valid_person9() {
-        System.out.println("->test_add_valid_person9()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person9").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_valid_uniqueperson() {
-        System.out.println("->test_add_not_valid_uniqueperson()");
-
-        Response r = http.addPerson(jsonMap.get("add_not_valid_uniqueperson").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testAddBadCar_unique() {
-        System.out.println();
+    public void testAddBadCar_unique() throws Exception {
         System.out.println("----testAddBadCar_unique----");
 
-        test_add_valid_person10();
-        test_add_car7();
-        test_add_not_valid_unique_car();
+        String add_person = "{\"id\":\"-260\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-260\",\"model\":\"BMW-X5\",\"horsepower\":100,\"ownerId\":\"-260\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isOk());
+
+        String add_car2 = "{\"id\":\"-260\",\"model\":\"BMW-X5\",\"horsepower\":100,\"ownerId\":\"-260\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car2))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_GET_PERSON)
+                .param("personid", "-260")
+                .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("-260"))
+                .andExpect(jsonPath("$.name").value("valid_person1"))
+                .andExpect(jsonPath("$.birthdate").value("01.01.2000"))
+                .andExpect(jsonPath("$.cars", hasSize(1)))
+
+                .andExpect(jsonPath("$.cars[?(@.model=='BMW-X5')].horsepower", hasSize(1)))
+                .andExpect(jsonPath("$.cars[?(@.model=='BMW-X5')].horsepower").value(100))
+        ;;
 
         System.out.println("----------------");
     }
-    private void test_add_valid_person10() {
-        System.out.println("->test_add_valid_person10()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person10").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car7() {
-        System.out.println("->test_add_car7()");
-
-        Response r = http.addCar(jsonMap.get("add_car7").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_valid_unique_car() {
-        System.out.println("->test_add_not_valid_unique_car()");
-
-        Response r = http.addCar(jsonMap.get("add_not_valid_unique_car").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testStatistics() {
-        System.out.println();
-        System.out.println("----testAddValidCars2----");
+    public void testStatistics() throws Exception {
+        System.out.println("----testStatistics----");
 
-        http.clear();
-        test_empty_statistics();
+        this.mockMvc.perform(get(URL_STATISTICS))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.personcount").value(0))
+                .andExpect(jsonPath("$.carcount").value(0))
+                .andExpect(jsonPath("$.uniquevendorcount").value(0));
 
-        test_add_valid_person11();
-        test_add_car8();
-        test_add_car9();
-        test_add_car10();
-        test_add_car11();
-        test_add_car12();
-        test_statistics();
+        String add_person = "{\"id\":\"-230\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-230\",\"model\":\"BMW-X5\",\"horsepower\":100,\"ownerId\":\"-230\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isOk());
+
+        String add_car2 = "{\"id\":\"-229\",\"model\":\"BMW-X3\",\"horsepower\":100,\"ownerId\":\"-230\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car2))
+                .andExpect(status().isOk());
+
+        String add_car3 = "{\"id\":\"-228\",\"model\":\"Lada-Devyatka\",\"horsepower\":50,\"ownerId\":\"-230\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car3))
+                .andExpect(status().isOk());
+
+        String add_car4 = "{\"id\":\"-227\",\"model\":\"La-da-Devyatka\",\"horsepower\":50,\"ownerId\":\"-230\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car4))
+                .andExpect(status().isOk());
+
+        String add_car5 = "{\"id\":\"-226\",\"model\":\"La-da-\",\"horsepower\":50,\"ownerId\":\"-230\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car5))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get(URL_STATISTICS))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.personcount").value(1))
+                .andExpect(jsonPath("$.carcount").value(5))
+                .andExpect(jsonPath("$.uniquevendorcount").value(3));
 
         System.out.println("----------------");
     }
-    private void test_empty_statistics() {
-        System.out.println("->test_empty_statistics()");
-
-        Response r = http.statistics();
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("empty_statistics").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
-    private void test_add_valid_person11() {
-        System.out.println("->test_add_valid_person11()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person11").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car8() {
-        System.out.println("->test_add_car8()");
-
-        Response r = http.addCar(jsonMap.get("add_car8").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car9() {
-        System.out.println("->test_add_car9()");
-
-        Response r = http.addCar(jsonMap.get("add_car9").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car10() {
-        System.out.println("->test_add_car10()");
-
-        Response r = http.addCar(jsonMap.get("add_car10").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car11() {
-        System.out.println("->test_add_car11()");
-
-        Response r = http.addCar(jsonMap.get("add_car11").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_car12() {
-        System.out.println("->test_add_car12()");
-
-        Response r = http.addCar(jsonMap.get("add_car12").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_statistics() {
-        System.out.println("->test_statistics()");
-
-        Response r = http.statistics();
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("statistics").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
 
     @Test
-    public void testStatistics2notAdd() {
-        System.out.println();
+    public void testStatistics2notAdd() throws Exception {
         System.out.println("----testStatistics2notAdd----");
 
-        http.clear();
-        test_empty_statistics();
+        this.mockMvc.perform(get(URL_STATISTICS))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.personcount").value(0))
+                .andExpect(jsonPath("$.carcount").value(0))
+                .andExpect(jsonPath("$.uniquevendorcount").value(0));
 
-        test_add_valid_person12();
-        test_add_not_valid_person13_nullname();
-        test_add_valid_car();
-        test_add_not_valid_car_empty_model();
-        test_statistics2();
+        String add_person = "{\"id\":\"-240\",\"name\":\"valid_person1\",\"birthdate\":\"01.01.2000\"}";
+
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-240\",\"model\":\"BMW-X5\",\"horsepower\":100,\"ownerId\":\"-240\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isOk());
+
+        String add_car2= "{\"id\":\"-239\",\"model\":\"\",\"horsepower\":50,\"ownerId\":\"-240\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car2))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(get(URL_STATISTICS))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.personcount").value(1))
+                .andExpect(jsonPath("$.carcount").value(1))
+                .andExpect(jsonPath("$.uniquevendorcount").value(1));
 
         System.out.println("----------------");
     }
-    private void test_add_valid_person12() {
-        System.out.println("->test_add_valid_person12()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person12").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_valid_person13_nullname() {
-        System.out.println("->test_add_not_valid_person13_nullname()");
-
-        Response r = http.addPerson(jsonMap.get("add_not_valid_person13_nullname").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_valid_car() {
-        System.out.println("->test_add_valid_car()");
-
-        Response r = http.addCar(jsonMap.get("add_valid_car").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_not_valid_car_empty_model() {
-        System.out.println("->test_add_not_valid_car_empty_model()");
-
-        Response r = http.addCar(jsonMap.get("add_not_valid_car_empty_model").getJson());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_statistics2() {
-        System.out.println("->test_statistics2()");
-
-        Response r = http.statistics();
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("statistics2").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
-
     @Test
-    public void testStatistics3ignorCase() {
-        System.out.println();
+    public void testStatistics3ignorCase() throws Exception {
         System.out.println("----testStatistics3ignorCase----");
 
-        http.clear();
-        test_empty_statistics();
+        this.mockMvc.perform(get(URL_STATISTICS))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.personcount").value(0))
+                .andExpect(jsonPath("$.carcount").value(0))
+                .andExpect(jsonPath("$.uniquevendorcount").value(0));
 
-        test_add_valid_person13();
-        test_add_valid_car1();
-        test_add_valid_car2();
-        test_add_valid_car3();
-        test_add_valid_car4();
-        test_add_valid_car5();
-        test_statistics3();
+        String add_person = "{\"id\":\"-270\",\"name\":\"Validperson1\",\"birthdate\":\"01.01.2000\"}";
 
+        this.mockMvc.perform(post(URL_ADD_PERSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_person))
+                .andExpect(status().isOk());
+
+        String add_car1 = "{\"id\":\"-270\",\"model\":\"BMW-X5\",\"horsepower\":100,\"ownerId\":\"-270\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car1))
+                .andExpect(status().isOk());
+
+        String add_car2 = "{\"id\":\"-269\",\"model\":\"BmW-X3\",\"horsepower\":100,\"ownerId\":\"-270\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car2))
+                .andExpect(status().isOk());
+
+        String add_car3 = "{\"id\":\"-268\",\"model\":\"Lada-Devyatka\",\"horsepower\":50,\"ownerId\":\"-270\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car3))
+                .andExpect(status().isOk());
+
+        String add_car4 = "{\"id\":\"-267\",\"model\":\"La-da-Devyatka\",\"horsepower\":50,\"ownerId\":\"-270\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car4))
+                .andExpect(status().isOk());
+
+        String add_car5 = "{\"id\":\"-266\",\"model\":\"La-da-\",\"horsepower\":50,\"ownerId\":\"-270\"}";
+
+        this.mockMvc.perform(post(URL_ADD_CAR)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(add_car5))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get(URL_STATISTICS))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.personcount").value(1))
+                .andExpect(jsonPath("$.carcount").value(5))
+                .andExpect(jsonPath("$.uniquevendorcount").value(3));
         System.out.println("----------------");
     }
-    private void test_add_valid_person13() {
-        System.out.println("->test_add_valid_person13()");
-
-        Response r = http.addPerson(jsonMap.get("add_valid_person13").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_valid_car1() {
-        System.out.println("->test_add_valid_car1()");
-
-        Response r = http.addCar(jsonMap.get("add_valid_car1").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_valid_car2() {
-        System.out.println("->test_add_valid_car2()");
-
-        Response r = http.addCar(jsonMap.get("add_valid_car2").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_valid_car3() {
-        System.out.println("->test_add_valid_car3()");
-
-        Response r = http.addCar(jsonMap.get("add_valid_car3").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_valid_car4() {
-        System.out.println("->test_add_valid_car4()");
-
-        Response r = http.addCar(jsonMap.get("add_valid_car4").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_add_valid_car5() {
-        System.out.println("->test_add_valid_car5()");
-
-        Response r = http.addCar(jsonMap.get("add_valid_car5").getJson());
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-
-        System.out.println("<-");
-    }
-    private void test_statistics3() {
-        System.out.println("->test_statistics3()");
-
-        Response r = http.statistics();
-        assertEquals(HttpStatus.OK.value(), r.getStatusCode());
-        //todo check vars -> jsonParsing->everyVar==requestVar
-        //simple approach
-        assertEquals(jsonMap.get("statistics3").getJson(), r.getBody().print());
-
-        System.out.println("<-");
-    }
-
 }
