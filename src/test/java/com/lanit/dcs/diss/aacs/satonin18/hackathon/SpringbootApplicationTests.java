@@ -21,18 +21,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)//@RunWith(SpringRunner.class)
-@SpringBootTest(classes = { SpringbootApplication.class }//, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
-)
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = { SpringbootApplication.class })
 @WebAppConfiguration
-//@WebMvcTest(RestServiceController.class)
-//@ActiveProfiles("test")
 public class SpringbootApplicationTests {
-
-//    private HttpService http = new HttpService(); // can be replace
-//    @InjectMocks
-//    private RestServiceController restServiceController;
-//    @Autowired
 
     private MockMvc mockMvc;
     @Autowired
@@ -49,13 +41,6 @@ public class SpringbootApplicationTests {
     public void setUp() throws Exception {
         System.out.println("---------@Test-@Before--------------");
 
-//        MockitoAnnotations.initMocks(this);
-//
-////        this.mockMvc = MockMvcBuilders
-////                .standaloneSetup(restServiceController)
-//////                .addFilters(new CORSFilter())
-////                .build();
-//
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(webApplicationContext)
                 .build();
@@ -67,20 +52,6 @@ public class SpringbootApplicationTests {
     public void tearDown() throws Exception {
         System.out.println("---------@Test-@After--------------");
     }
-
-//    @Test
-//    public void test() throws Exception {
-//        //ВНЕШНИЕ ТЕСТЫ (при запущенном сервере, также как soapUi)
-////        final String API_ROOT = "http://10.32.101.63:8080/hackathon";
-////        Response r = RestAssured.get(API_ROOT + "/clear");
-////        assertEquals(200,r.getStatusCode());
-//
-////        System.out.println(200);
-////
-////        this.mockMvc.perform(get("/clear")).andExpect(status().isOk());
-////
-////        System.out.println("OKKKKKKKKKKKKKKKKKKK");
-//    }
 
     @Test
     public void testClear() throws Exception {
